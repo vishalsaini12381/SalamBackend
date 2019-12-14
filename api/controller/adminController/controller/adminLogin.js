@@ -6,7 +6,6 @@ var jwt = require('jsonwebtoken');
 var JWTSECRET = 'shivendra123'
 
 var adminSignup = ((req,res)=>{
-    console.log('888888888',req.body);
     try{
         admin.findOne({email:  req.body.email}).then((doc)=>{
             console.log('document',doc);

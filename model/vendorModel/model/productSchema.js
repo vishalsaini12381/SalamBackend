@@ -2,39 +2,39 @@ var mongoose = require('mongoose');
 const ObjectId = mongoose.Schema.Types.ObjectId;
 
 var productSchema = new mongoose.Schema({
-    productId : {
+    productId: {
         type: String,
         trim: true,
     },
-    productName : {
+    productName: {
         type: String,
         trim: true,
     },
     productPrice: {
-        type : String,
+        type: String,
         trim: true,
     },
     discount: {
-        type :String,
+        type: String,
         trim: true,
     },
-    businesscategoryId : {
-        type : ObjectId,
-        ref : 'businesss',
+    businesscategoryId: {
+        type: ObjectId,
+        ref: 'businesss',
         default: null
     },
-    categoryId : {
-        type : ObjectId,
-        ref : 'category',
+    categoryId: {
+        type: ObjectId,
+        ref: 'category',
         default: null
     },
-    subCategoryId : {
-        type : ObjectId,
-        ref : 'subCategory',
+    subCategoryId: {
+        type: ObjectId,
+        ref: 'subCategory',
         default: null
     },
-    brandName : {
-        type : String,
+    brandName: {
+        type: String,
         trim: true,
     },
     file1: {
@@ -48,39 +48,39 @@ var productSchema = new mongoose.Schema({
     file3: {
         type: String,
         default: null
-    }, 
+    },
     file4: {
         type: String,
         default: null
     },
-    quantity : {
-        type : String,
-        trim: true,
-    },
-    status : {
+    quantity: {
         type: String,
         trim: true,
-        default : false,
     },
-    aboutProduct : {
+    status: {
+        type: String,
+        trim: true,
+        default: false,
+    },
+    aboutProduct: {
         type: String,
         trim: true,
     },
 
-    specification : [],
+    specification: [],
 
     createdAt: {
         type: String,
         default: new Date()
     },
     updatedAt: {
-        type : String,
-        default : new Date()
+        type: String,
+        default: new Date()
     },
-    userId: {type: ObjectId, ref: 'user', default: null},
-},{usePushEach: true});
+    userId: { type: ObjectId, ref: 'user', default: null },
+}, { usePushEach: true });
 
-
+productSchema.index({categoryId: 1, subCategoryId: 1}, {unique: true});
 var product = mongoose.model('product', productSchema);
 
 module.exports = product;
