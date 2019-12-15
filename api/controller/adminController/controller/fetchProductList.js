@@ -27,7 +27,7 @@ var fetchProductList = ((req,res)=>{
         populate('subCategoryId','Subcategory')
         .populate('userId','name storeName')
         .then((resp)=>{
-            console.log('?????????????????????/',resp.subCategoryId);
+            // console.log('?????????????????????/',resp.subCategoryId);
             if(resp){
                 return res.json({
                     status: true ,
@@ -43,7 +43,7 @@ var fetchProductList = ((req,res)=>{
                     brandName : resp.brandName,
                     quantity : resp.quantity,
                     aboutProduct : resp.aboutProduct,
-                    file : resp.file,
+                    file : resp.file1,
                 })
             }
         })
