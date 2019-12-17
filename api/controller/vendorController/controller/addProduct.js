@@ -1,10 +1,8 @@
-var Product = require('../../../../model/vendorModel/model/productSchema');
+var Product = require('../../../../model/products.model');
 var User = require('../../../../model/vendorModel/model/vendorSchema');
 
 var addProduct = ((req, res) => {
-    console.log('request', req.body.specification);
-    req.checkBody({
-    });
+
     const errors = req.validationErrors();
     if (errors) {
         var errorMessage = [];
@@ -13,18 +11,7 @@ var addProduct = ((req, res) => {
         });
         return res.json({ status: false, message: errorMessage[0], });
     } else {
-
-        // console.log('request',req.body.subCategory);
         try {
-            // var a = req.body.file1;
-            // var m = a.indexOf('data:')
-            // var n = a.indexOf(';');
-            // var o = a.slice(m,n);
-            // var p = o.split('/')
-            // var arr = (["jpeg","jpg","png"]);
-            // console.log('\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\',m,n,o,p)
-
-
             const product = new Product({
                 userId: req.body.userId,
                 file1: req.body.file1,
@@ -43,7 +30,9 @@ var addProduct = ((req, res) => {
                 aboutProduct: req.body.aboutProduct,
                 specification: req.body.specification,
                 createdAt: new Date(),
-                updateAt: new Date().getTime()
+                updateAt: new Date().getTime(),
+                isRefundable: req.body.isRefundable || false,
+                returnPolicy: req.body.returnPolicy
             })
             User.findById({ _id: req.body.userId }).then((user) => {
                 // console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!',user.adminStatus);
@@ -106,9 +95,9 @@ var userStatus = ((req, res) => {
                     message: 'Verify',
                     status: user.adminStatus
                 })
-            } else if(user.adminStatus === 'Block'){
+            } else if (user.adminStatus === 'Block') {
                 return res.json({ status: false, message: 'You are blocked by admin' })
-            }else {
+            } else {
                 return res.json({ status: false, message: 'Your profile is not verified by admin' })
             }
         }
