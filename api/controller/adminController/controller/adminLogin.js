@@ -8,14 +8,12 @@ var JWTSECRET = 'shivendra123'
 var adminSignup = ((req,res)=>{
     try{
         admin.findOne({email:  req.body.email}).then((doc)=>{
-            console.log('document',doc);
             var pass = bcrypt.hashSync(req.body.password);
             var Admin = new admin({
                 email: req.body.email,
                 password :  pass
             });
             Admin.save((error,save)=>{
-                console.log('saved',save);
                 if(error){
                     return res.json({status: false, message: 'user Not Saved'});
                 }else{
@@ -29,14 +27,12 @@ var adminSignup = ((req,res)=>{
 });
 
 var adminLogin = ((req,res)=>{
-    console.log('9999999999999999999',req.body);
     try{
         var log = {
             email: req.body.email,
             password: req.body.password
         }
         admin.findOne({email: log.email}).then(async(user)=>{
-            console.log('77777777777777',user);
             if(!user){
                 return res.json({status: false, message: 'User Not Found'});
             }
@@ -76,7 +72,6 @@ var adminLogout = ((req,res)=>{
 var fetchVendor = ((req,res)=>{
     try{
        vendor.findById({_id : mongoose.Types.ObjectId(req.body.vendorId)}).then((doc)=>{
-           console.log('...................',doc);
            if(doc){
                return res.json({
                    status: true,  

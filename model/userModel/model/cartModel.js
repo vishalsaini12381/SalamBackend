@@ -27,7 +27,14 @@ var CartSchema = new mongoose.Schema({
         type: String,
         default: new Date()
     },
-    
+    status:{
+        type: String,
+        enum: ['Cart','Wishlist']
+    },
+    isDeleted: {
+        type: Boolean,
+        default: false
+    },
     userId: {type: ObjectId, ref: 'user', default: null},
     productId : {type : ObjectId, ref : 'product',default: null},
     vendorId : {type: ObjectId, ref: 'user', default: null},

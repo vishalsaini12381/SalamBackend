@@ -11,7 +11,6 @@ var fetchHomeProduct = (async(req,res)=>{
         product.find().limit(10).sort( { createdAt: -1 } )
         .populate('businesscategoryId')
         .then(async(product)=>{
-            console.log('ZZZZZZZZZZZZZZ',product);
             businessData=product;
             // if(product){
             //     return res.json({status: true, message: '', product});
@@ -33,7 +32,6 @@ var fetchHomeProduct = (async(req,res)=>{
             return res.json({status: false, message: "Not Found"})
         }
     }catch(error){
-        // console.log('QQQQQQQQQQ',error);
         return res.json({status: false, message: "Something Went Wrong"});
     }
 })
@@ -44,7 +42,6 @@ var fetchProduct = ((req,res)=>{
         .populate('businesscategoryId','businesscategory')
         .then((product)=>{
 
-             console.log('ZZZZZZZZZZZZZZ',product);
             if(product){
                 return res.json({status: true, message: '', product});
             }else{
@@ -52,7 +49,6 @@ var fetchProduct = ((req,res)=>{
             }
         })
     }catch(error){
-        // console.log('QQQQQQQQQQ',error);
         return res.json({status: false, message: "Something Went Wrong"});
     }
 })
@@ -99,7 +95,6 @@ var productDetail = (async(req,res)=>{
             //product['gffgfggf']="sddsdsdsds";
             
            // await waitFor(100);
-            console.log('ZZZZZZZZZZZZZZ',productData);
             var similarProduct=[];
             if(productData){
                 product2.find({subCategoryId:productData[0].product.subCategoryId}).
@@ -116,19 +111,16 @@ var productDetail = (async(req,res)=>{
             }
         })
     }catch(error){
-        // console.log('QQQQQQQQQQ',error);
         return res.json({status: false, message: "Something Went Wrong"});
     }
 })
 
 
 var searchBox = ((req,res)=>{
-    // console.log('11111111111111111111111111111111111122222222222233333333',req.body)
     try{
         let query;
                 query = {productName : { $regex : req.body.search, $options:'i' }}
                 product.find(query).then((product)=>{
-            // console.log('2222222222222222222222222222222', product)
             res.status(200).send({product});
         },(e)=>{
             res.status(404).send(e);
@@ -139,23 +131,18 @@ var searchBox = ((req,res)=>{
 });
 
 var fetchProductSpecification = (req,res)=>{
-    console.log('123456789',req.body);
     try{
         let query ;
         let specification = req.body.specification;
         let status = 'false' ;
         if(status === 'false' ){
             query = {status : 'false'}
-            console.log('1111111',query);
         }
         else if (status === 'false' && specification !== '') {
             query = {specification : req.body.specification} ;
-            console.log('3333333',query);
         }
 
-        console.log('4444444',query);
         product.find(query).then((doc)=>{
-            // console.log('DDDDDDDDDDDDDDD',doc);
             if(doc){
                 return res.json({status : true , message : '', doc});
             }else{
@@ -171,7 +158,6 @@ var fetchProductSpecification = (req,res)=>{
 var filterData2 = (async(req,res)=>{
     var businessData=[];
     var productData=[];
-    //console.log('123456789',req.body);
     try{
         const waitFor = (ms) => new Promise(r => setTimeout(r, ms));
         let query ;
@@ -181,14 +167,11 @@ var filterData2 = (async(req,res)=>{
         // let status = 'false' ;
         // if(status === 'false' ){
         //     query = {status : 'false'}
-        //     console.log('1111111',query);
         // }
         // else if (status === 'false' && specification !== '') {
         //     query = {specification : req.body.specification} ;
-        //     console.log('3333333',query);
         // }
 
-        // console.log('4444444',query);
         product.find({subCategoryId:subCategoryId}).then(async(doc)=>{
             if(doc){
                 businessData=doc;
@@ -198,14 +181,11 @@ var filterData2 = (async(req,res)=>{
         businessData.forEach(async element => {
             //element.specification;
             element.specification.forEach(async elmData=>{
-                //console.log('DDDDDDDDDDDDDDD',elmData.value);
                 specification.forEach(async reqData=>{
-                    //console.log('DDDDDDDDDDDDDDD',reqData);
                     if(reqData==elmData.value){
                         if(element._id in productData){
 
                         }else{
-                            console.log('element._id',element._id)
                             productData.push(element);
                         }
                         // productData.forEach(async (proDta)=>{
@@ -228,7 +208,6 @@ var filterData2 = (async(req,res)=>{
         }
 
         //return res.json({status : true , message : '',ss: n.value});
-            // console.log('DDDDDDDDDDDDDDD',doc);
             // if(doc){
             //     return res.json({status : true , message : '', doc});
             // }else{
@@ -243,7 +222,6 @@ var filterData2 = (async(req,res)=>{
 var filterData = (async(req,res)=>{
     var businessData=[];
     var productData=[];
-    //console.log('123456789',req.body);
     try{
         const waitFor = (ms) => new Promise(r => setTimeout(r, ms));
         let query ;

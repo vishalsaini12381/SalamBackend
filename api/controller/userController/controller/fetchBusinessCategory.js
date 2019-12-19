@@ -93,11 +93,7 @@ var fetchBusinesscategoryHeader = ((req, res) => {
                     }
 
                     var data = getAllData(index._id);
-                    // console.log("dat -----------------",await data) 
                     businessArr.category.push(await data);
-
-                    console.log('categoryData', businessArr)
-                    //newArray = businessArr
                     newArray.push(businessArr);
 
                 })
@@ -141,7 +137,6 @@ module.exports = { fetchBusinesscategory, fetchBusinesscategoryHeader };
 //         })
 
 //         await waitFor(50);
-//         //console.log('businessData',businessData);
 //         businessData.forEach(async element => {
 //             category.find({businessId:element._id}).
 //                 then(async(categoryres)=>{
@@ -164,12 +159,10 @@ module.exports = { fetchBusinesscategory, fetchBusinesscategoryHeader };
 
 //         categoryData.forEach(async element => {
 //             var globalCat=[]
-//             //console.log('element._id',element._id)
 //             element.categories.forEach(async catelement => {
 //                 subcategory.find({categoryId:catelement._id}).
 //                     then(async(subcategoryres)=>{
 //                         if(subcategoryres){
-//                             // console.log('subcategoryressubcategoryres',catelement);
 //                             // categoryres['name22']=element.businesscategory;
 //                             var catObj={
 //                                 'categories_id':catelement._id,

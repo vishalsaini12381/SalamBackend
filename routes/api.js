@@ -44,21 +44,15 @@ var UserSpecification = require('../api/controller/userController/controller/fet
 
 var userCart = require('../api/controller/userController/controller/userCart');
 var userOrder = require('../api/controller/userController/controller/userOrder');
-
 // Admin Api Token
 
 var verifyTokenApi = function(req,res,next){
-    console.log('PPPPPPPPPPPPPPPP',req.cookies.jwtToken[0]);
     if(req.cookies.jwtToken){
         token = req.cookies.jwtToken[0];
-        console.log('token',token);
         jwt.verify(token,JWTSECRET,function(err,decoded){
-            console.log('wwwwww',decoded);
           if(err) return res.redirect('/');
           user.findOne({_id : decoded.id}).then(function(res){
-              console.log('<<<<<<<<<<<<<<<',res);
               if(res == null || res == '') return res.redirect('/');
-              console.log('321466',res);
               if(res){
                   req.currentUser = res;
                   return next();
@@ -75,21 +69,15 @@ var verifyTokenApi = function(req,res,next){
 // Vendor Api Token
 
 var verifyTokenAPII=function(req,res,next){
-    console.log('qqqqq',req.cookies.jwtToken[0]);
     if(req.cookies.jwtToken){
        token = req.cookies.jwtToken[0];
-      console.log('ssss',token);
         // tokenStatus	=req.cookies.jwtToken[1];
         jwt.verify(token,JWTSECRET, function(err, decoded) {
-          console.log('wwwwww',decoded);
           if (err)return res.redirect('/');
             User.findOne({_id: decoded.id}).then(function(res){
-              console.log('ssss',user.findOne,res);
               if(res==null || res=='')return res.redirect('/');
-              console.log('35521',res)
               if(res){
                 req.currentUser = res;
-                console.log('current',res);
                 return next();
               }
             }).catch(function(err){
@@ -221,9 +209,11 @@ router.post('/user/getAddress',userCart.getAddress);
 router.post('/user/addAddress',userCart.addAddress);
 router.post('/user/deleteAddress',userCart.deleteAddress);
 router.post('/user/getSingleAddress',userCart.getSingleAddress);
+router.post('/user/codOrder',userOrder.confirmCashOrder);
 
-router.post('/user/codOrder',userOrder.codOrder);
 router.post('/user/myOrders',userOrder.myOrders);
+router.get('/user/myOrders/:id', userOrder.getOrderDetails);
+
 router.post('/user/payment',userOrder.payment);
 router.post('/user/filterData',userFetchProduct.filterData);
 

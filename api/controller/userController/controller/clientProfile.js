@@ -1,10 +1,8 @@
 var user = require('../../../../model/vendorModel/model/vendorSchema');
 
 var userProfile = ((req,res)=>{
-    console.log('phone',req.body.mobile);
     try {
         user.findOne({email: req.body.email}).then((data)=>{ 
-            console.log('00000000000000000000',data);
             if(data){
                 data.firstName = req.body.firstName;
                 data.lastName  = req.body.lastName;
@@ -18,7 +16,6 @@ var userProfile = ((req,res)=>{
                 data.country = req.body.country;
 
                 data.save((err,resp)=>{
-                    console.log('111111111111111',resp.mobile);
                     if(err){
                         return res.json({status: false, message: 'Profile Not Updated Some Error'});
                     }else{

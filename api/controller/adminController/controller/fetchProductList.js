@@ -8,7 +8,6 @@ var productList = ((req,res)=>{
         .populate('categoryId','category')
         .populate('userId','name storeName')
         .then((product)=>{
-            console.log('product',product);
          if(product){
              return res.json({status : true , message : '' , product})
          }else{
@@ -27,7 +26,6 @@ var fetchProductList = ((req,res)=>{
         populate('subCategoryId','Subcategory')
         .populate('userId','name storeName')
         .then((resp)=>{
-            // console.log('?????????????????????/',resp.subCategoryId);
             if(resp){
                 return res.json({
                     status: true ,

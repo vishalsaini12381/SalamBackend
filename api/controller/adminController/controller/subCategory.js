@@ -4,7 +4,6 @@ var mongoose = require('mongoose');
 
 
 var subCategoryMethod = ((req,res)=>{
-    // console.log('ZZZZZZZZZZZZZZZ',req.body);
     try{
         // business.findById({_id: req.body.businesscategoryId}).then((user)=>{
         var log = new subCategory({
@@ -16,7 +15,6 @@ var subCategoryMethod = ((req,res)=>{
         // user.categoryId.subCategoryId.push(log);
         // user.save();
         log.save((error,saved)=>{
-            // console.log('saved',saved);
             if(error){
                 return res.json({status: false, message: 'SubCategory Not Added'});
             }else {
@@ -35,7 +33,6 @@ var fetchsubCategory = ((req,res)=>{
         .populate('businessId','businesscategory')
         .populate('categoryId','category')
         .then((subcategory)=>{
-            // console.log('DDDDDDDDDDDDDDDD',subcategory);
             if(subcategory){
                 return res.json({status : true, message: '' , subcategory})
             }else{
@@ -51,11 +48,9 @@ var deleteSubCategory = ((req,res)=>{
     try{
         var id = req.body.businessId
         subCategory.findByIdAndRemove(id).then((doc)=>{
-            // console.log('DOOOOOOOOOOOOOOOOO',doc);
             return res.json({status: false, message: 'Poof! Your imaginary file has been deleted!' })
         })
     }catch(error){
-        console.log('ERROR',error);
         return res.json({status: false, message: "Something Went Wrong"});
     }
 })
@@ -63,10 +58,8 @@ var deleteSubCategory = ((req,res)=>{
 var editSubCategory = ((req,res)=>{
     try{
     let id = req.params.id;
-    // console.log('///////////////////////',id);
     subCategory.findById(id, function(err,subCategory){
         res.json(subCategory);
-        console.log('subCategory',subCategory);
     })
 }catch(error){
     return res.json({status: false, message: 'SomeThing Went Wrong'});
@@ -75,35 +68,27 @@ var editSubCategory = ((req,res)=>{
 
 var updateSubCategory = ((req,res)=>{
     try{
-        // console.log('SSSSSSSSSSSSS',req.params.id);
-
         let id = req.params.id;
 
         subCategory.findByIdAndUpdate(id , {$set:{subcategory : req.body.Subcategory}})
         .then((user)=>{
-            // console.log('userserserses,',user);
             if(user){
                 return res.json({status: true , message: 'SubCategory Updated' , user})
             }else{
                 return res.json({status: false , message: 'SubCategory Not Found'});
             }
         },(e)=>{
-            // console.log('eeeeeeeeeeeeeeeeeee',e);
             return res.json({status: false, message: 'Subcategory Not Updated' });
         })
     }catch(error){
-        // console.log('error',error);
         return res.json({status: false ,message: 'SomeThing Went Wrong'});
     }
 })
 
 var fetchsubCategoryId = ((req,res)=>{
-    console.log('req.body.subcategory',req.body.category);
     try{
         subCategory.find({categoryId :  mongoose.Types.ObjectId(req.body.category)})
-        // .populate('categoryId','category')
         .then((subcategory)=>{
-            console.log('DDDDDDDDDDDDDDDD',subcategory);
             if(subcategory){
                 return res.json({status : true, message: '' , subcategory})
             }else{
@@ -112,7 +97,6 @@ var fetchsubCategoryId = ((req,res)=>{
         })
         
     }catch(error){
-        console.log('error',error);
         return res.json({status: false, message: 'SomeThing Went Wrong'})
     }
 })

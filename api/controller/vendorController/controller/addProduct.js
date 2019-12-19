@@ -35,7 +35,6 @@ var addProduct = ((req, res) => {
                 returnPolicy: req.body.returnPolicy
             })
             User.findById({ _id: req.body.userId }).then((user) => {
-                // console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!',user.adminStatus);
                 if (!user) {
                     return res.json({ status: false, message: "User not Exist" })
                 }
@@ -46,7 +45,6 @@ var addProduct = ((req, res) => {
                         // if(arr.includes(p[1])){
                         product.save(function (err, save) {
                             if (err) {
-                                console.log('errorerrorwewe', err);
                                 return res.json({ status: false, message: "Error Occured" });
                             }
                             return res.json({
@@ -77,7 +75,6 @@ var addProduct = ((req, res) => {
                 }
             })
         } catch (error) {
-            console.log('.................', error);
             return res.json({ status: false, message: "Something Went Wrong" })
         }
     }
@@ -87,7 +84,6 @@ var userStatus = ((req, res) => {
 
     //    var userId = req.body.userId;
     User.findById({ _id: req.body.userId }).then((user) => {
-        console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!', user.adminStatus);
         if (user) {
             if (user.adminStatus === 'Verify') {
                 return res.json({

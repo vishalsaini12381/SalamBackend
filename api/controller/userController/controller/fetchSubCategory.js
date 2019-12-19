@@ -44,13 +44,11 @@ var fetchsubcategory = ((req, res) => {
                 // More stages
             ],
             function (err, results) {
-                // console.log('---------------------',{err},results)
 
                 subcategory.findOne({})
                     .populate('categoryId', 'category')
                     // .populate('businessId','businesscategory')
                     .then((subcategory) => {
-                        // console.log('WWWWWWWWWWWWWWWWWWWWWWWW',results);
                         if (subcategory) {
                             return res.json({ status: true, message: '=', results })
                         } else {
@@ -84,8 +82,6 @@ var fetchcategoryData = ((req, res) => {
             }
         ]).toArray(function (err, res) {
             if (err) throw err;
-            console.log(JSON.stringify(res));
-            // db.close();
         });
     } catch (err) {
         return res.json({ status: false, message: 'SomeThing Went Wrong' });
@@ -116,7 +112,6 @@ var fetchcategoryData = ((req, res) => {
 //         // .populate('categoryId','category')
 //         // .populate('businessId','businesscategory')
 //         .then((category)=>{
-//             console.log('WWWWWWWWWWWWWWWWWWWWWWWW',category);
 //             // categoryArry = [];
 //             if(category){
 //                 category.forEach(function(item){
@@ -125,16 +120,13 @@ var fetchcategoryData = ((req, res) => {
 //                     // categoryArry.push(item);
 //                     array3=[];
 
-//                     // console.log("categiry ----------- ",categoryArry);
 //                     subcategory.find({categoryId : item._id}).then((subcategory)=>{
 //                         // categoryArry._id.push(subcategory);
 //                         obj1 = {"category123":[]},
-//                         console.log("subcategory11111111 ------------ ",subcategory)
 //                         subcategory.forEach(function(item1){
 //                             obj1.category123.push(item1);
 //                         })
 //                         var z = Object.assign( {}, obj1, item );
-//                         console.log("subcategory ------------ ",z)
 
 //                     })
 
