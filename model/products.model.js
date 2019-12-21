@@ -16,24 +16,37 @@ var productsSchema = new mongoose.Schema({
     },
     businesscategoryId: {
         type: ObjectId,
-        ref: 'businesss',
-        default: null
+        ref: 'businesss'
     },
     categoryId: {
         type: ObjectId,
-        ref: 'category',
-        default: null
+        ref: 'category'
     },
     subCategoryId: {
         type: ObjectId,
-        ref: 'subCategory',
-        default: null
+        ref: 'subCategory'
     },
     brandName: {
         type: String,
         trim: true,
     },
     file: {
+        type: String,
+        default: null
+    },
+    file1: {
+        type: String,
+        default: null
+    },
+    file2: {
+        type: String,
+        default: null
+    },
+    file3: {
+        type: String,
+        default: null
+    },
+    file4: {
         type: String,
         default: null
     },
@@ -53,7 +66,7 @@ var productsSchema = new mongoose.Schema({
     isRefundable: { type: Boolean, default: false },
     returnPolicy: {
         daysToReturn: { type: Number, default: 0 },
-        description: { type: String }
+        conditions: { type: String }
     },
     createdAt: {
         type: String,

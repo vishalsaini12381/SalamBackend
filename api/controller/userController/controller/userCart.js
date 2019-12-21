@@ -14,27 +14,46 @@ var addToCart = async (req, res) => {
 
         const productDetails = await product.findOne({ _id: req.body.productId });
         let updatedQuantity = 0;
-        
+
 
         if (productInCart != undefined && Object.keys(productInCart).length > 0) {
 
             if (req.body.action === 1) {
                 if (parseInt(productDetails.quantity) > 0) {
-                    
                     totalUnit = parseInt(productInCart.quantity) + parseInt(req.body.quantity);
                     updatedQuantity = parseInt(productDetails.quantity) - parseInt(req.body.quantity);
+                    const cartDiscount = (parseFloat(productDetails.discount) * parseFloat(productDetails.productPrice)) / 100
+                    const cartAmount = parseFloat(productDetails.productPrice) - cartDiscount;
+                    const cartTotal = totalUnit * cartAmount;
+
+                    await cart.findOneAndUpdate({ _id: productInCart._id },
+                        {
+                            quantity: totalUnit,
+                            price: productDetails.productPrice,
+                            discount: cartDiscount,
+                            amount: cartAmount,
+                            total: cartTotal
+                        });
                     message = 'cart updated successfully.'
-                    await cart.findOneAndUpdate({ _id: productInCart._id }, { quantity: totalUnit, price: productDetails.price });
                 } else {
                     message = 'Out of stock.'
                 }
             } else if (req.body.action === 2) {
                 updatedQuantity = parseInt(productDetails.quantity) + parseInt(req.body.quantity);
                 totalUnit = parseInt(productInCart.quantity) - parseInt(req.body.quantity);
+                const cartDiscount = (parseFloat(productDetails.discount) * parseFloat(productDetails.productPrice)) / 100
+                const cartAmount = parseFloat(productDetails.productPrice) - cartDiscount;
+                const cartTotal = totalUnit * cartAmount;
+
+                await cart.findOneAndUpdate({ _id: productInCart._id },
+                    {
+                        quantity: totalUnit,
+                        price: productDetails.productPrice,
+                        discount: cartDiscount,
+                        amount: cartAmount,
+                        total: cartTotal
+                    });
                 message = 'cart updated successfully.'
-
-                await cart.findOneAndUpdate({ _id: productInCart._id }, { quantity: totalUnit, price: productDetails.price });
-
             } else {
                 await cart.findByIdAndRemove(productInCart._id);
 
@@ -43,10 +62,10 @@ var addToCart = async (req, res) => {
             }
 
         } else if (productDetails.quantity >= 1) {
-            let price = req.body.price;
-            let discount = (parseFloat(req.body.discount)*price)/100;
+            let price = productDetails.productPrice;
+            let discount = (parseFloat(productDetails.discount) * price) / 100;
             let amount = price - discount;
-            let quantity = req.body.quantity;
+            let quantity = 1;
 
             let userCart = new cart({
                 userId: req.body.userId,
@@ -76,7 +95,7 @@ var addToCart = async (req, res) => {
         });
 
     } catch (error) {
-        
+
         return res.json({ status: false, message: 'Something Went Wrong', error: error });
     }
 }

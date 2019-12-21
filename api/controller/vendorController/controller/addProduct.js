@@ -43,6 +43,7 @@ var addProduct = ((req, res) => {
                         // user.productId.push(product)
                         // user.save();
                         // if(arr.includes(p[1])){
+                            console.log("-----------",product)
                         product.save(function (err, save) {
                             if (err) {
                                 return res.json({ status: false, message: "Error Occured" });
