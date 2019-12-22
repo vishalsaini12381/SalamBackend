@@ -7,7 +7,7 @@ const ObjectId = mongoose.Schema.Types.ObjectId;
 
 var addToCart = async (req, res) => {
     try {
-        const productInCart = await cart.findOne({ userId: req.body.userId, productId: req.body.productId });
+        const productInCart = await cart.findOne({ userId: req.body.userId, isDeleted : false, productId: req.body.productId });
 
         let totalUnit = 0;
         let message = '';

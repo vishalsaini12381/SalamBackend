@@ -7,26 +7,24 @@ var fetchHomeProduct = (async(req,res)=>{
     var businessData=[];
     var productData=[];
     try{
-        const waitFor = (ms) => new Promise(r => setTimeout(r, ms));
-        product.find().limit(10).sort( { createdAt: -1 } )
+        productData = await product.find().limit(10).sort( { createdAt: -1 } )
         .populate('businesscategoryId')
-        .then(async(product)=>{
-            businessData=product;
+        // .then(async(product)=>{
+        //     businessData=product;
             // if(product){
             //     return res.json({status: true, message: '', product});
             // }else{
             //     return res.json({status: false, message: "Not Found"})
             // }
-        })
-        await waitFor(50);
-        businessData.forEach(async element => {
-            if(element.businesscategoryId.status==1){
-                productData.push(element);
-                await waitFor(60);
-            }
-        });
+        // })
+        // businessData.forEach(async element => {
+        //     if(element.businesscategoryId.status==1){
+        //         productData.push(element);
+        //         await waitFor(60);
+        //     }
+        // });
         //await waitFor(500);
-        if(product){
+        if(productData){
             return res.json({status: true, message: '', productData});
         }else{
             return res.json({status: false, message: "Not Found"})

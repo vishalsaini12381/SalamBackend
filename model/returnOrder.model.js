@@ -3,16 +3,17 @@ const ObjectId = mongoose.Schema.Types.ObjectId;
 
 
 var ReturnOrderSchema = new mongoose.Schema({
-    order_id: { type: ObjectId, ref: 'orders', default: null },
-    return_reason_id:{
+    orderId: { type: ObjectId, ref: 'orders', default: null },
+    subOrderId : { type: ObjectId },
+    returnReasonId:{
         type: String,
         trim: true
     },
-    customer_comment:{
+    customerComment:{
         type: String,
         trim : true
     },
-    return_comment: {
+    returnComment: {
         type: String,
         trim: true,
     },
@@ -22,6 +23,6 @@ var ReturnOrderSchema = new mongoose.Schema({
     },
 }, { usePushEach: true });
 
-var returnOrder = mongoose.model('returnOrder', ReturnOrderSchema);
+var ReturnOrder = mongoose.model('returnOrder', ReturnOrderSchema);
 
-module.exports = returnOrder;
+module.exports = ReturnOrder;

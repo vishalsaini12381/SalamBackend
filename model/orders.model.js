@@ -3,7 +3,6 @@ const ObjectId = mongoose.Schema.Types.ObjectId;
 
 var NewOrdersSchema = new mongoose.Schema({
     customerId: { type: ObjectId, ref: 'user', default: null },
-    orderStatus: { type: String, enum: ['Cancelled', 'Completed'] },
     orderDate: { type: String, default: new Date() },
     orderItems: [{
         productId: { type: ObjectId, ref: 'product', trim: true },
@@ -17,11 +16,15 @@ var NewOrdersSchema = new mongoose.Schema({
     }],
     shippingCharges: { type: Number, default: 0 },
     totalOrderCost: { type: Number, default: 0 },
+    orderStatus: { type: String, enum: ['Cancelled', 'Completed'] },
+    paymentType: { type: String, enum: ["cod", "pod", "online", "wallet"] },
+    paymentStatus : { type : String, enum : ["success","failed"] },
     isDeleted: {
         type: Boolean,
         default: false
     },
-    addressId: { type: ObjectId, ref: 'shippingAddress', default: null }
+    addressId: { type: ObjectId, ref: 'shippingAddress', default: null },
+    transactionId : { type: ObjectId, ref: 'transaction', default: null }
 }, { usePushEach: true });
 
 var NewOrder = mongoose.model('new_order', NewOrdersSchema);

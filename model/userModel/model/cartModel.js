@@ -39,7 +39,7 @@ var CartSchema = new mongoose.Schema({
     productId : {type : ObjectId, ref : 'product',default: null},
     vendorId : {type: ObjectId, ref: 'user', default: null},
     
-},{usePushEach: true});
+},{timestamps: true});
 
 var Cart = mongoose.model('cart', CartSchema);
 
