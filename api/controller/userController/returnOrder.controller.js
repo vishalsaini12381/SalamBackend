@@ -1,22 +1,33 @@
 const ReturnOrder = require('../../../model/returnOrder.model');
-
+const NewOrder = require('../../../model/orders.model');
 exports.returnRequest = async (req, res) => {
 
     try {
 
         const orderId = req.body.orderId;
         const subOrderId = req.body.subOrderId;
+        const isRequestAlreadyRegistered = await NewOrder.aggregate([
+            { $match: { $and: [{ '_id': mongoose.Types.ObjectId(orderId) }, { 'orderItems._id': mongoose.Types.ObjectId(subOrderId) }, { 'orderItems.isRefundRequested': true }] } },
+            { $unwind: '$orderItems' },
+            { $match: { 'orderItems._id': mongoose.Types.ObjectId(subOrderId) } }
+        ])
+        // const returnOrderData = await ReturnOrder.findOne({ orderId, subOrderId })
+        if (!(isRequestAlreadyRegistered.length > 0)) {
 
-        const returnOrderData = await ReturnOrder.findOne({ orderId, subOrderId })
-        if (returnOrderData) {
-            const returnOrder = new ReturnOrder({
-                orderId,
-                subOrderId,
-                customerComment: req.body.customerComment
-            })
+            let dataOrderUpdate = await NewOrder.update({
+                '$and':
+                    [{ '_id': orderId }, { 'orderItems._id': subOrderId }]
+            },
+                {
+                    '$set': {
+                        'orderItems.$.requestComment' : req.body.requestComment,
+                        'orderItems.$.isRefundRequested': true,
+                        'orderItems.$.refundRequest.refundRequest': new Date(),
+                        'orderItems.$.refundRequest.refundStatus': 'requested'
+                    }
+                });
 
-            const data = await returnOrder.save()
-            if (!data) {
+            if (!dataOrderUpdate) {
                 res.send({
                     message: "Unable save data",
                     success: false
@@ -45,7 +56,7 @@ exports.getReturnOrderRequest = (req, res) => {
     const orderId = req.body.orderId;
     const subOrderId = req.body.subOrderId;
 
-    ReturnOrder.findOne({ orderId, subOrderId })
+    NewOrder.findOne({ '$and': [{ '_id': orderId }, { 'orderItems._id': subOrderId }] })
         .then(data => {
             if (!data) {
                 res.send({

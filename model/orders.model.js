@@ -12,20 +12,33 @@ var NewOrdersSchema = new mongoose.Schema({
         pricePerUnit: { type: Number, default: 0 },
         amountAfterDiscount: { type: Number, default: 0 },
         totalOrderItemAmount: { type: Number, default: 0 },
-        vendorId: { type: ObjectId, ref: 'user' }
+        vendorId: { type: ObjectId, ref: 'user' },
+        isRefundRequested: { type: Boolean, default: false },
+        refundRequest: {
+            requestComment: { type: String },
+            refundId: { type: ObjectId, ref: "returnOrder" },
+            refundRequestDate: { type: Date },
+            refundProcessedDate: { type: Date },
+            refundStatus: { type: String, enum: ['requested', 'initiated', 'processed'] }
+        },
+        isReturnRequested: { type: Boolean, default: false },
+        returnRequest: {
+            returnId: { type: ObjectId, ref: "returnOrder" },
+            returnStatus: { type: String, enum: ['requested', 'initiated', 'completed'] }
+        },
     }],
     shippingCharges: { type: Number, default: 0 },
     totalOrderCost: { type: Number, default: 0 },
     orderStatus: { type: String, enum: ['Cancelled', 'Completed'] },
     paymentType: { type: String, enum: ["cod", "pod", "online", "wallet"] },
-    paymentStatus : { type : String, enum : ["success","failed"] },
+    paymentStatus: { type: String, enum: ["success", "failed"] },
     isDeleted: {
         type: Boolean,
         default: false
     },
     addressId: { type: ObjectId, ref: 'shippingAddress', default: null },
-    transactionId : { type: ObjectId, ref: 'transaction', default: null }
-}, { usePushEach: true });
+    transactionId: { type: ObjectId, ref: 'transaction', default: null }
+}, { timestamps: true });
 
 var NewOrder = mongoose.model('new_order', NewOrdersSchema);
 

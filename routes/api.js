@@ -15,7 +15,6 @@ var adminBrand = require('../api/controller/adminController/controller/addBrand'
 var Specification = require('../api/controller/adminController/controller/specification');
 var adminOrder = require('../api/controller/vendorController/controller/vendorOrder');
 
-
 //Vendor
 
 var Vendor = require('../api/controller/vendorController/controller/commonVendor');
@@ -102,15 +101,9 @@ router.post('/admin/vendorList', adminVendor.vendorList);
 router.post('/admin/fetchVendorList', adminVendor.fetchVendorList);
 router.post('/admin/editVendorList', adminVendor.editVendorList);
 router.post('/admin/deleteVendor', adminVendor.deleteVendor);
-
 router.post('/admin/userList', adminUser.userList);
-
-
-//
 router.post('/admin/productList', adminProduct.productList);
 router.post('/admin/fetchProductList', adminProduct.fetchProductList);
-
-//
 router.post('/admin/businessCategory', adminBusiness.businessCategory);
 router.post('/admin/fetchBusiness', adminBusiness.fetchBusinessCategory);
 router.post('/admin/deleteBusinessCategory', adminBusiness.deleteBusinessCategory);
@@ -145,6 +138,8 @@ router.post('/admin/deleteBrand', adminBrand.deleteBrand);
 
 router.post('/admin/getAllOrderAdmin', adminOrder.getAllOrderAdmin);
 router.post('/admin/getOrderDetailAdmin', adminOrder.getOrderDetailAdmin);
+router.get('/admin/getAllAdminReturnRequest', adminOrder.getAllAdminReturnRequest);
+router.post('/admin/initiate-refund-process', adminOrder.refundProcessing);
 
 
 /* GET Vendor Api listing. */

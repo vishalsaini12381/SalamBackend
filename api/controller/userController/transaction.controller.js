@@ -1,14 +1,18 @@
-const TransctionSchema = require('../../../model/transaction.model')
+const TransctionSchema = require('../../../model/transaction.model');
+const UserSchema = require('../../../model/vendorModel/model/vendorSchema')
 
 exports.getTransaction = async (req, res) => {
     const userId = req.body.userId;
 
     try {
-        const transactions = await TransctionSchema.find({ senderId: userId })
+        const userData = await UserSchema.findById(userId);
+
+        const transactions = await TransctionSchema.find({ $or: [{ senderId: userId }, { receiverId: userId }] })
         if (transactions) {
             res.send({
                 message: "Data fetched successfully",
                 data: transactions,
+                wallet : userData.wallet,
                 success: true
             })
         }
