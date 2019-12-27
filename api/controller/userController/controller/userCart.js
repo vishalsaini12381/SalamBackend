@@ -7,10 +7,11 @@ const ObjectId = mongoose.Schema.Types.ObjectId;
 
 var addToCart = async (req, res) => {
     try {
-        const productInCart = await cart.findOne({ userId: req.body.userId, isDeleted : false, productId: req.body.productId });
+        const productInCart = await cart.findOne({ userId: req.body.userId, isDeleted: false, productId: req.body.productId });
 
         let totalUnit = 0;
         let message = '';
+        let success = true;
 
         const productDetails = await product.findOne({ _id: req.body.productId });
         let updatedQuantity = 0;
@@ -19,8 +20,9 @@ var addToCart = async (req, res) => {
         if (productInCart != undefined && Object.keys(productInCart).length > 0) {
 
             if (req.body.action === 1) {
-                if (parseInt(productDetails.quantity) > 0) {
-                    totalUnit = parseInt(productInCart.quantity) + parseInt(req.body.quantity);
+                totalUnit = parseInt(productInCart.quantity) + parseInt(req.body.quantity);
+                if (parseInt(productDetails.quantity) > totalUnit) {
+                    
                     updatedQuantity = parseInt(productDetails.quantity) - parseInt(req.body.quantity);
                     const cartDiscount = (parseFloat(productDetails.discount) * parseFloat(productDetails.productPrice)) / 100
                     const cartAmount = parseFloat(productDetails.productPrice) - cartDiscount;
@@ -30,13 +32,15 @@ var addToCart = async (req, res) => {
                         {
                             quantity: totalUnit,
                             price: productDetails.productPrice,
-                            discount: cartDiscount,
+                            discount: parseFloat(productDetails.discount),
+                            discountValue: cartDiscount,
                             amount: cartAmount,
                             total: cartTotal
                         });
                     message = 'cart updated successfully.'
                 } else {
-                    message = 'Out of stock.'
+                    message = 'Out of stock.';
+                    success = false;
                 }
             } else if (req.body.action === 2) {
                 updatedQuantity = parseInt(productDetails.quantity) + parseInt(req.body.quantity);
@@ -49,7 +53,8 @@ var addToCart = async (req, res) => {
                     {
                         quantity: totalUnit,
                         price: productDetails.productPrice,
-                        discount: cartDiscount,
+                        discount: parseFloat(productDetails.discount),
+                        discountValue: cartDiscount,
                         amount: cartAmount,
                         total: cartTotal
                     });
@@ -63,8 +68,8 @@ var addToCart = async (req, res) => {
 
         } else if (productDetails.quantity >= 1) {
             let price = productDetails.productPrice;
-            let discount = (parseFloat(productDetails.discount) * price) / 100;
-            let amount = price - discount;
+            let cartDiscount = (parseFloat(productDetails.discount) * price) / 100;
+            let amount = price - cartDiscount;
             let quantity = 1;
 
             let userCart = new cart({
@@ -72,7 +77,8 @@ var addToCart = async (req, res) => {
                 productId: req.body.productId,
                 vendorId: productDetails['userId'],
                 price: price,
-                discount: discount,
+                discount: parseFloat(productDetails.discount),
+                discountValue: cartDiscount,
                 amount: amount,
                 quantity: quantity,
                 total: quantity * amount,
@@ -84,10 +90,12 @@ var addToCart = async (req, res) => {
             message = 'Item successfully added in cart.'
         } else {
             message = 'Out of stock.'
+            success = false;
         }
         if (updatedQuantity > 0)
             await product.findOneAndUpdate({ _id: req.body.productId }, { quantity: updatedQuantity });
         res.json({
+            success,
             status: true,
             message,
             code: 200,
@@ -95,7 +103,6 @@ var addToCart = async (req, res) => {
         });
 
     } catch (error) {
-
         return res.json({ status: false, message: 'Something Went Wrong', error: error });
     }
 }

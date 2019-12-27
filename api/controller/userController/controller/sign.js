@@ -122,6 +122,11 @@ var login = ((req, res) => {
                             gender: doc.gender,
                             dob: doc.dob,
                             accountType: doc.accountType,
+                            streetAddress: doc.streetAddress,
+                            zipcode: doc.zipcode,
+                            city: doc.city,
+                            state: doc.state,
+                            country: doc.country
                         })
                     } else {
                         return res.json({ status: false, message: 'Incorrect Password' });

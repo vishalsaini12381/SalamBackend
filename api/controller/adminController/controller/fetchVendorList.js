@@ -1,89 +1,92 @@
 var vendor = require('../../../../model/vendorModel/model/vendorSchema');
-var mongoose  = require('mongoose');
+var mongoose = require('mongoose');
 
-var vendorList = ((req,res)=>{
+var vendorList = ((req, res) => {
 
-    try{
-        vendor.find({accountType : req.body.type}).then((doc)=>{
-            if(doc){
-                return res.json({status: true, message: '', data:doc,});
-            }else{
-                return res.json({status: false, message: 'Vendors Not Found'});
+    try {
+        vendor.find({ accountType: req.body.type }).then((doc) => {
+            if (doc) {
+                return res.json({ status: true, message: '', data: doc, });
+            } else {
+                return res.json({ status: false, message: 'Vendors Not Found' });
             }
         })
     }
-    catch(error){
-        return res.json({status: false, message: 'Something Went Wrong'});
+    catch (error) {
+        return res.json({ status: false, message: 'Something Went Wrong' });
     }
 });
 
-var fetchVendorList = ((req,res)=>{
-    try{
-        vendor.findById({_id: mongoose.Types.ObjectId(req.body.vendorId)}).then((user)=>{
-            if(user){
+var fetchVendorList = ((req, res) => {
+    try {
+        vendor.findById({ _id: mongoose.Types.ObjectId(req.body.vendorId) }).then((user) => {
+            if (user) {
                 return res.json({
-                    status : true, 
-                    message : '',
-                    image : user.image,
-                    name :  user.name,
-                    email : user.email,
-                    mobile : user.mobile,
-                    adminStatus : user.adminStatus,
-                    vendorId : user._id,
-                    address : user.address,
-                    accountType : user.accountType,
-                    city : user.city,
-                    streetName : user.streetName,
-                    storeEmail : user.storeEmail,
-                    storeName  : user.storeName,
-                    featured   : user.featured,
+                    status: true,
+                    message: '',
+                    image: user.image,
+                    name: user.name,
+                    email: user.email,
+                    mobile: user.mobile,
+                    adminStatus: user.adminStatus,
+                    vendorId: user._id,
+                    address: user.address,
+                    accountType: user.accountType,
+                    city: user.city,
+                    streetName: user.streetName,
+                    storeEmail: user.storeEmail,
+                    storeName: user.storeName,
+                    featured: user.featured,
 
                 })
-            }else{
-                return res.json({status: false , message : 'Vendor Not Found'});
+            } else {
+                return res.json({ status: false, message: 'Vendor Not Found' });
             }
         })
-    }catch(error){
-        return res.json({status: false, message: 'SomeThing Went Wrong'})
+    } catch (error) {
+        return res.json({ status: false, message: 'SomeThing Went Wrong' })
     }
 })
 
-var editVendorList = ((req,res)=>{
-    try{
-        vendor.findOne({_id : mongoose.Types.ObjectId(req.body.vendorId)}).then((vendor)=>{
-            if(vendor){
-                vendor.adminStatus = req.body.status;
-                vendor.featured    = req.body.featured;
-                vendor.save((err,resp)=>{
-                    if(err){
-                        return res.json({status: false , message : 'Some Error With Query'});
-                    }else{
+var editVendorList = ((req, res) => {
+    try {
+        vendor.findOne({ _id: mongoose.Types.ObjectId(req.body.vendorId) }).then((vendor) => {
+            if (vendor) {
+                if (req.body.status !== undefined)
+                    vendor.adminStatus = req.body.status;
+
+                if (req.body.featured !== undefined)
+                    vendor.featured = req.body.featured;
+                vendor.save((err, resp) => {
+                    if (err) {
+                        return res.json({ status: false, message: 'Some Error With Query' });
+                    } else {
                         return res.json({
-                            status : true , 
-                            message : 'Vendor Status Updated',
-                            adminStatus :  resp.adminStatus,
-                            featured    :  resp.featured,
+                            status: true,
+                            message: 'Vendor Status Updated',
+                            adminStatus: resp.adminStatus,
+                            featured: resp.featured,
                         })
                     }
                 })
             }
         })
-    }catch(error){
-        return res.json({status : false , message : 'SomeThing Went Wrong'});
+    } catch (error) {
+        return res.json({ status: false, message: 'SomeThing Went Wrong' });
     }
 })
 
-var deleteVendor = ((req,res)=>{
-    try{
+var deleteVendor = ((req, res) => {
+    try {
         var id = req.body.businessId
-        vendor.findByIdAndRemove(id).then((doc)=>{
-            return res.json({status: false, message: 'Poof! Your imaginary file has been deleted!' })
+        vendor.findByIdAndRemove(id).then((doc) => {
+            return res.json({ status: false, message: 'Poof! Your imaginary file has been deleted!' })
         })
-    }catch(error){
-        return res.json({status: false, message: "Something Went Wrong"});
+    } catch (error) {
+        return res.json({ status: false, message: "Something Went Wrong" });
     }
 })
 
 
 
-module.exports = {vendorList,fetchVendorList,editVendorList,deleteVendor};
+module.exports = { vendorList, fetchVendorList, editVendorList, deleteVendor };

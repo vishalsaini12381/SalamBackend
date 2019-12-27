@@ -55,7 +55,8 @@ var fetchBusinesscategory = (async (req, res) => {
                                     ],
                                     as: 'subcategorie'
                                 }
-                            }
+                            },
+                            { $match: { "subcategorie": { $gt: { $size: 1 } } } }
                         ],
                         as: 'categories'
                     }

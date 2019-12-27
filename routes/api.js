@@ -217,5 +217,6 @@ router.post('/user/get-return-request', getReturnOrderRequest);
 const { getTransaction } = require('../api/controller/userController/transaction.controller')
 
 router.post('/user/transaction', getTransaction);
+router.get('/user/brands', adminBrand.fetchBrands);
 
 module.exports = router;

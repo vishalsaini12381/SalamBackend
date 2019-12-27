@@ -80,7 +80,7 @@ var productSchema = new mongoose.Schema({
     userId: { type: ObjectId, ref: 'user', default: null },
 }, { usePushEach: true });
 
-productSchema.index({categoryId: 1, subCategoryId: 1}, {unique: true});
+// productSchema.index({categoryId: 1, subCategoryId: 1}, {unique: true});
 var product = mongoose.model('product', productSchema);
 
 module.exports = product;

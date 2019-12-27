@@ -8,8 +8,12 @@ var CartSchema = new mongoose.Schema({
         trim: true,
     },
     discount:{
-        type: String,
-        trim: true,
+        type: Number,
+        default : 0
+    },
+    discountValue:{
+        type: Number,
+        default : 0
     },
     amount:{
         type: String,
