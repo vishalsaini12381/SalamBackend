@@ -53,62 +53,52 @@ var fetchProduct = ((req, res) => {
 
 
 var productDetail = (async (req, res) => {
-    var productData = [];
     try {
-        const waitFor = (ms) => new Promise(r => setTimeout(r, ms));
-        product.findOne({ _id: req.body.productId })
+        let productData = await product.findOne({ _id: req.body.productId })
             .populate('businesscategoryId', 'businesscategory')
             .populate('categoryId', 'category')
             .populate('subCategoryId', 'subcategory')
-            .then(async (product) => {
-                var obj = {}
-                var isCart = "0"
 
-                await waitFor(50);
-                cart.findOne({ productId: product._id, userId: req.body.userId }).
-                    then(async (cartData) => {
-                        if (cartData) {
-                            isCart = cartData.quantity
-                        } else {
-                            isCart = 0
-                        }
+        var obj = {}
+        var isCart = "0"
 
-                    })
-                wishlist.findOne({ productId: product._id, userId: req.body.userId }).
-                    then(async (wishlistData) => {
-                        if (wishlistData) {
-                            isWishlist = 1
-                        } else {
-                            isWishlist = 0
-                        }
+        const cartData = await cart.findOne({ productId: productData._id, userId: req.body.userId })
+        if (cartData) {
+            isCart = cartData.quantity
+        } else {
+            isCart = 0
+        }
 
-                    })
-                await waitFor(50);
-                obj = {
-                    "product": product,
-                    "isCart": isCart,
-                    "isWishlist": isWishlist
-                }
-                productData.push(obj);
-                //product['gffgfggf']="sddsdsdsds";
+        const wishlistData = wishlist.findOne({ productId: productData._id, userId: req.body.userId })
+        if (wishlistData) {
+            isWishlist = 1
+        } else {
+            isWishlist = 0
+        }
 
-                // await waitFor(100);
-                var similarProduct = [];
-                if (productData) {
-                    product2.find({ subCategoryId: productData[0].product.subCategoryId }).
-                        then(async (similarProductData) => {
-                            if (similarProductData) {
-                                similarProduct = similarProductData
-                            }
-                        })
-                    await waitFor(50);
+        obj = {
+            "product": productData,
+            "isCart": isCart,
+            "isWishlist": isWishlist
+        }
 
-                    return res.json({ status: true, message: '', productData, similarProduct });
-                } else {
-                    return res.json({ status: false, message: "Not Found", similarProduct })
-                }
-            })
+        productData = obj;
+
+        let similarProduct = [];
+        if (productData) {
+            const similarProductData = await product2.find({ subCategoryId: productData.product.subCategoryId })
+
+            if (similarProductData) {
+                similarProduct = similarProductData
+            }
+
+            return res.json({ status: true, message: '', productData, similarProduct });
+        } else {
+            return res.json({ status: false, message: "Not Found", similarProduct })
+        }
+
     } catch (error) {
+        console.log(error)
         return res.json({ status: false, message: "Something Went Wrong" });
     }
 })
@@ -240,5 +230,6 @@ var filterData = (async (req, res) => {
         return res.json({ status: false, message: 'Something Went Wrong' });
     }
 })
+
 
 module.exports = { fetchHomeProduct, fetchProduct, productDetail, searchBox, fetchProductSpecification, filterData };
