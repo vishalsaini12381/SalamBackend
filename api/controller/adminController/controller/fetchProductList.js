@@ -1,4 +1,4 @@
-var product = require('../../../../model/vendorModel/model/productSchema');
+var product = require('../../../../model/products.model');
 var mongoose = require('mongoose');
 
 var productList = ((req,res)=>{
@@ -41,7 +41,10 @@ var fetchProductList = ((req,res)=>{
                     brandName : resp.brandName,
                     quantity : resp.quantity,
                     aboutProduct : resp.aboutProduct,
-                    file : resp.file1,
+                    file1 : resp.file1,
+                    file2 : resp.file2,
+                    file3 : resp.file3,
+                    file4 : resp.file4,
                 })
             }
         })

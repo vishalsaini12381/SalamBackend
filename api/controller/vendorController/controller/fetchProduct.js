@@ -1,4 +1,4 @@
-var product = require('../../../../model/vendorModel/model/productSchema');
+var product = require('../../../../model/products.model');
 var mongoose = require('mongoose');
 
 var fetchProduct = ((req, res) => {

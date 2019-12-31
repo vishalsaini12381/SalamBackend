@@ -1,5 +1,5 @@
-var product = require('../../../../model/vendorModel/model/productSchema');
-var product2 = require('../../../../model/vendorModel/model/productSchema');
+var product = require('../../../../model/products.model');
+var product2 = require('../../../../model/products.model');
 var cart = require('../../../../model/userModel/model/cartModel');
 var wishlist = require('../../../../model/userModel/model/wishlistModel');
 

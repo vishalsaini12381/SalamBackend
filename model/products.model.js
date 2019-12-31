@@ -68,6 +68,7 @@ var productsSchema = new mongoose.Schema({
         daysToReturn: { type: Number, default: 0 },
         conditions: { type: String }
     },
+    specification: [],
     createdAt: {
         type: String,
         default: new Date()
