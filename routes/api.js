@@ -89,6 +89,7 @@ var verifyTokenAPII = function (req, res, next) {
   }
 };
 
+router.get('/', (req,res) => res.send("Welcome to Salam Trade"));
 
 /* GET Admin Api listing. */
 router.post('/admin/adminSignup', adminSign.adminSignup);
