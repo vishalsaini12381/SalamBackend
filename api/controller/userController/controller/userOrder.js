@@ -127,7 +127,7 @@ var payment = async (req, res) => {
         })
 
         const chargeData = await stripe.charges.create({
-            amount: req.body.amount,
+            amount: Math.round(req.body.amount*100),
             currency: "usd",
             customer: stripeCustomerData.id,
             description: req.body.description
