@@ -2,7 +2,7 @@
 const NewOrder = require('../../../../model/orders.model');
 const Transaction = require('../../../../model/transaction.model')
 const User = require('../../../../model/vendorModel/model/vendorSchema')
-var product = require('../../../../model/vendorModel/model/productSchema');
+var product = require('../../../../model/products.model');
 var address = require('../../../../model/userModel/model/shippingAddressModel');
 var mongoose = require('mongoose');
 

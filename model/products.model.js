@@ -51,8 +51,8 @@ var productsSchema = new mongoose.Schema({
         default: null
     },
     quantity: {
-        type: String,
-        trim: true,
+        type: Number,
+        default : 0
     },
     status: {
         type: String,

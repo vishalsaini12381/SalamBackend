@@ -1,8 +1,9 @@
 const stripe = require("stripe")('sk_test_MvJ9Wc8zcwXWz5gRZWzHrepc00eXKS8HNb');
 var cart = require('../../../../model/userModel/model/cartModel');
-const NewOrder = require('../../../../model/orders.model')
-const user = require('../../../../model/vendorModel/model/vendorSchema')
-const TransctionSchema = require('../../../../model/transaction.model')
+const NewOrder = require('../../../../model/orders.model');
+const user = require('../../../../model/vendorModel/model/vendorSchema');
+const TransctionSchema = require('../../../../model/transaction.model');
+
 
 const confirmCashOrder = async (req, res) => {
     try {
@@ -49,6 +50,14 @@ const confirmCashOrder = async (req, res) => {
     }
 }
 
+//update the products
+const updateTheProductQuantities = (orderItemsArray) =>{
+
+    orderItemsArray.forEach(item =>{
+
+    })
+
+}
 const getCartDetails = async (userId) => {
 
     const cartArray = await cart.find({ userId: userId, isDeleted: false });

@@ -1,7 +1,7 @@
 var cart = require('../../../../model/userModel/model/cartModel');
 var wishlist = require('../../../../model/userModel/model/wishlistModel');
 var address = require('../../../../model/userModel/model/shippingAddressModel');
-var product = require('../../../../model/vendorModel/model/productSchema');
+var product = require('../../../../model/products.model');
 var mongoose = require('mongoose');
 const ObjectId = mongoose.Schema.Types.ObjectId;
 
@@ -121,7 +121,6 @@ var addToWishlist = ((req, res) => {
                     });
                 })
             } else {
-
                 var userCart = new wishlist({
                     userId: req.body.userId,
                     productId: req.body.productId,
