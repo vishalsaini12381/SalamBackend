@@ -191,6 +191,7 @@ router.post('/user/userProfile', Profile.userProfile);
 router.post('/user/fetchBusinesscategory', userBusiness.fetchBusinesscategory);
 router.post('/user/fetchBusinesscategoryHeader', userBusiness.fetchBusinesscategoryHeader);
 router.post('/user/fetchcategory', userCategory.fetchcategory);
+
 router.post('/user/fetchSubCategory', userSubCategory.fetchsubcategory);
 router.post('/user/fetchcategoryData', userSubCategory.fetchcategoryData);
 //

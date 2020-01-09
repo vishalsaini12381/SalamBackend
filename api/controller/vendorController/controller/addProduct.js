@@ -98,7 +98,11 @@ var userStatus = ((req, res) => {
             } else {
                 return res.json({ status: false, message: 'Your profile is not verified by admin' })
             }
+        }else{
+            res.json({ status: false, message: 'No vendor exist' })
         }
+    }).catch(error => {
+        res.json({ status: false, message: "Internal Server Error" })
     })
 })
 

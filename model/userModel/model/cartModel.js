@@ -40,7 +40,7 @@ var CartSchema = new mongoose.Schema({
         default: false
     },
     userId: {type: ObjectId, ref: 'user', default: null},
-    productId : {type : ObjectId, ref : 'product',default: null},
+    productId : {type : ObjectId, ref : 'products',default: null},
     vendorId : {type: ObjectId, ref: 'user', default: null},
     
 },{timestamps: true});

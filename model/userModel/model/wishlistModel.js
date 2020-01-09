@@ -8,7 +8,7 @@ var wishlistSchema = new mongoose.Schema({
         default: new Date()
     },
     userId: {type: ObjectId, ref: 'user', default: null},
-    productId : {type : ObjectId, ref : 'product',default: null},
+    productId : {type : ObjectId, ref : 'products',default: null},
     
 },{usePushEach: true});
 

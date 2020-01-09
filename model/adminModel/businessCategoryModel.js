@@ -14,8 +14,6 @@ var businessCategory = new mongoose.Schema({
         type : String, 
         default : 0,
     },
-    // categoryId : [{type : ObjectId, ref : 'category',default: null}],
-    // subCategoryId : [{type : ObjectId, ref : 'subCategory',default: null}],
     categoryId : [{type : ObjectId, ref : 'category',default: null}],
 
 },{usePushEach: true})

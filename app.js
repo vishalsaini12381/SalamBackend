@@ -17,6 +17,7 @@ app.use(cors());
 app.use(validator());
 
 mongoose.set('useCreateIndex', true);
+
 mongoose.connect('mongodb://localhost:27017/SalamTradeVersion',{useNewUrlParser : true}).then(
   (res) =>{
     console.log("Connected to Database Seccessfully...");

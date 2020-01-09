@@ -5,7 +5,7 @@ var NewOrdersSchema = new mongoose.Schema({
     customerId: { type: ObjectId, ref: 'user', default: null },
     orderDate: { type: String, default: new Date() },
     orderItems: [{
-        productId: { type: ObjectId, ref: 'product', trim: true },
+        productId: { type: ObjectId, ref: 'products', trim: true },
         OrderItemStatus: { type: String, enum: ['Ordered', 'Delivered', 'ReturnRefund', 'ReturnExchange', 'Out of Stock'] },
         totalUnits: { type: Number, default: 0 },
         discount: { type: Number, default: 0 },

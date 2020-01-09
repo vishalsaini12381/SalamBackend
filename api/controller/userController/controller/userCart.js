@@ -1,10 +1,8 @@
 var cart = require('../../../../model/userModel/model/cartModel');
 var wishlist = require('../../../../model/userModel/model/wishlistModel');
 var address = require('../../../../model/userModel/model/shippingAddressModel');
-var product = require('../../../../model/products.model');
+var products = require('../../../../model/products.model');
 var mongoose = require('mongoose');
-const ObjectId = mongoose.Schema.Types.ObjectId;
-
 var addToCart = async (req, res) => {
     try {
         const productInCart = await cart.findOne({ userId: req.body.userId, isDeleted: false, productId: req.body.productId });
@@ -21,7 +19,7 @@ var addToCart = async (req, res) => {
 
             if (req.body.action === 1) {
                 totalUnit = parseInt(productInCart.quantity) + parseInt(req.body.quantity);
-                if (parseInt(productDetails.quantity) > totalUnit) {
+                if (parseInt(productDetails.quantity) >= req.body.quantity) {
 
                     updatedQuantity = parseInt(productDetails.quantity) - parseInt(req.body.quantity);
                     const cartDiscount = (parseFloat(productDetails.discount) * parseFloat(productDetails.productPrice)) / 100
@@ -92,8 +90,7 @@ var addToCart = async (req, res) => {
             message = 'Out of stock.'
             success = false;
         }
-        if (updatedQuantity > 0)
-            await products.findOneAndUpdate({ _id: req.body.productId }, { quantity: updatedQuantity });
+        await products.findOneAndUpdate({ _id: req.body.productId }, { quantity: updatedQuantity });
         res.json({
             success,
             status: true,
@@ -155,6 +152,9 @@ var myCart = (async (req, res) => {
             } else {
                 return res.json({ status: false, code: 101, message: "Not Found" })
             }
+        })
+        .catch(error => {
+            return res.json({ status: false, code: 102, message: "Something Went Wrong" });
         })
 })
 

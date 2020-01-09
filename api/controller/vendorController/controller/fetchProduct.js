@@ -24,10 +24,11 @@ var fetchProductList = ((req, res) => {
         product.findById({ _id: mongoose.Types.ObjectId(req.body.productId) })
             .populate('businesscategoryId', 'businesscategory')
             .populate('categoryId', 'category')
-            .populate('subCategoryId', 'Subcategory')
+            .populate('subCategoryId', 'subcategory')
             .populate('userId', 'name storeName')
             .then((user) => {
                 if (user) {
+                    console.log("object",user.subCategoryId)
                     return res.json({
                         status: true,
                         message: '',
@@ -44,7 +45,7 @@ var fetchProductList = ((req, res) => {
                         discount: user.discount,
                         businesscategory: user.businesscategoryId.businesscategory,
                         category: user.categoryId.category,
-                        subCategory: user.subCategoryId.Subcategory,
+                        subCategory: user.subCategoryId.subcategory,
                         brandName: user.brandName,
                         quantity: user.quantity,
                         aboutProduct: user.aboutProduct,
