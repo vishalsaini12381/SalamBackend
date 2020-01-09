@@ -13,7 +13,7 @@ var addToCart = async (req, res) => {
         let message = '';
         let success = true;
 
-        const productDetails = await product.findOne({ _id: req.body.productId });
+        const productDetails = await products.findOne({ _id: req.body.productId });
         let updatedQuantity = 0;
 
 
@@ -22,7 +22,7 @@ var addToCart = async (req, res) => {
             if (req.body.action === 1) {
                 totalUnit = parseInt(productInCart.quantity) + parseInt(req.body.quantity);
                 if (parseInt(productDetails.quantity) > totalUnit) {
-                    
+
                     updatedQuantity = parseInt(productDetails.quantity) - parseInt(req.body.quantity);
                     const cartDiscount = (parseFloat(productDetails.discount) * parseFloat(productDetails.productPrice)) / 100
                     const cartAmount = parseFloat(productDetails.productPrice) - cartDiscount;
@@ -93,7 +93,7 @@ var addToCart = async (req, res) => {
             success = false;
         }
         if (updatedQuantity > 0)
-            await product.findOneAndUpdate({ _id: req.body.productId }, { quantity: updatedQuantity });
+            await products.findOneAndUpdate({ _id: req.body.productId }, { quantity: updatedQuantity });
         res.json({
             success,
             status: true,
@@ -147,19 +147,15 @@ var addToWishlist = ((req, res) => {
 })
 
 var myCart = (async (req, res) => {
-    try {
-        cart.find({ userId: mongoose.Types.ObjectId(req.body.userId), isDeleted: false })
-            .populate('productId')
-            .then(async (product) => {
-                if (product.length > 0) {
-                    return res.json({ status: true, code: 100, message: '', product });
-                } else {
-                    return res.json({ status: false, code: 101, message: "Not Found" })
-                }
-            })
-    } catch (error) {
-        return res.json({ status: false, code: 102, message: "Something Went Wrong" });
-    }
+    cart.find({ userId: mongoose.Types.ObjectId(req.body.userId), isDeleted: false })
+        .populate('productId')
+        .then(async (product) => {
+            if (product.length > 0) {
+                return res.json({ status: true, code: 100, message: '', product });
+            } else {
+                return res.json({ status: false, code: 101, message: "Not Found" })
+            }
+        })
 })
 
 var myWishlist = (async (req, res) => {
