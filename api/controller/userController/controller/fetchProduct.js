@@ -62,14 +62,14 @@ var productDetail = (async (req, res) => {
         var obj = {}
         var isCart = "0"
 
-        const cartData = await cart.findOne({ productId: productData._id, userId: req.body.userId })
+        const cartData = await cart.findOne({ productId: productData._id, userId: req.body.userId ,isDeleted: false})
         if (cartData) {
             isCart = cartData.quantity
         } else {
             isCart = 0
         }
 
-        const wishlistData = wishlist.findOne({ productId: productData._id, userId: req.body.userId })
+        const wishlistData = await wishlist.findOne({ productId: productData._id, userId: req.body.userId })
         if (wishlistData) {
             isWishlist = 1
         } else {
