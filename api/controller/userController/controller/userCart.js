@@ -91,10 +91,18 @@ var addToCart = async (req, res) => {
             success = false;
         }
         await products.findOneAndUpdate({ _id: req.body.productId }, { quantity: updatedQuantity });
+        let cartTotal = await getCartItemsCount(req.body.userId);
+        
+        if(Array.isArray(cartTotal))
+            cartTotal = cartTotal.length;
+        else
+            cartTotal = 0;
+
         res.json({
             success,
             status: true,
             message,
+            cartTotal,
             code: 200,
             data: []
         });
@@ -157,6 +165,10 @@ var myCart = (async (req, res) => {
             return res.json({ status: false, code: 102, message: "Something Went Wrong" });
         })
 })
+
+const getCartItemsCount = (userId) => {
+    return cart.find({ userId: mongoose.Types.ObjectId(userId), isDeleted: false });
+}
 
 var myWishlist = (async (req, res) => {
     var productData = [];
@@ -261,4 +273,4 @@ var deleteAddress = (async (req, res) => {
 })
 
 
-module.exports = { addToCart, addToWishlist, myCart, myWishlist, getAddress, addAddress, deleteAddress, getSingleAddress };
+module.exports = { addToCart, addToWishlist, myCart, getCartItemsCount, myWishlist, getAddress, addAddress, deleteAddress, getSingleAddress };

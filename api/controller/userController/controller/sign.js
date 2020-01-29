@@ -1,15 +1,6 @@
 var user = require('../../../../model/vendorModel/model/vendorSchema');
 var bcrypt = require('bcryptjs');
-var nodemailer = require('nodemailer');
-
-// var transporter = nodemailer.createTransport({
-//     service : 'Gmail',
-//     auth : {
-//         user:  'shivendra.techgropse@gmail.com',
-//         pass: 'gropse@7117'
-//     }
-// });
-
+const { getCartItemsCount } = require('../controller/userCart')
 var registerUser = ((req, res) => {
     try {
         user.findOne({ email: req.body.email }).then((response) => {
@@ -29,20 +20,6 @@ var registerUser = ((req, res) => {
                 password: pass,
                 'status.activeEmailToken': otp,
             });
-
-            // const mailOptions = {
-            //     from : 'shivendra.techgropse@gmail.com',
-            //     to : req.body.email,
-            //     subject : 'Account Activation | SalamTrade',
-            //     html :   `<body>
-            //               <h1>Hello ${req.body.email}</h1>
-            //               <h2><a title = "Reset" href = "http://localhost:3100/api/activate/${otp}/${type}"> Click Here to Verify Your Account</a></h2>
-            //               </body> `
-            // };
-            // transporter.sendMail(mailOptions, function(err,info){
-            //     if(err){
-            //         return res.json({status: false, message: 'Network Error. Unable to send email currently'})
-            //     }else{
             User.save((err, user) => {
                 if (err) {
                     return res.json({ status: false, message: 'Error registering the user details' });
@@ -50,8 +27,6 @@ var registerUser = ((req, res) => {
                     return res.json({ status: true, message: 'User successfully sign up' })
                 }
             })
-            //     }
-            // }) 
         })
     } catch (error) {
         return res.json({ status: false, message: 'SomeThing Went Wrong' });
@@ -111,6 +86,9 @@ var login = ((req, res) => {
             if (doc) {
                 if (doc.status.activeEmail == true) {
                     if (await bcrypt.compare(req.body.password, doc.password)) {
+
+                        const cartTotal = await getCartItemsCount(doc._id);
+
                         return res.json({
                             status: true,
                             message: 'Login SuccessFully',
@@ -126,7 +104,8 @@ var login = ((req, res) => {
                             zipcode: doc.zipcode,
                             city: doc.city,
                             state: doc.state,
-                            country: doc.country
+                            country: doc.country,
+                            cartTotal
                         })
                     } else {
                         return res.json({ status: false, message: 'Incorrect Password' });
