@@ -1,40 +1,34 @@
-var product = require('../../../../model/products.model');
-var product2 = require('../../../../model/products.model');
-var cart = require('../../../../model/userModel/model/cartModel');
-var wishlist = require('../../../../model/userModel/model/wishlistModel');
+const product = require('../../../../model/products.model');
+const cart = require('../../../../model/userModel/model/cartModel');
+const wishlist = require('../../../../model/userModel/model/wishlistModel');
+const { getCartItemsCount } = require('../controller/userCart')
 
-var fetchHomeProduct = (async (req, res) => {
-    var businessData = [];
-    var productData = [];
+const fetchHomeProduct = (async (req, res) => {
+    let productList = [];
     try {
-        productData = await product.find().limit(10).sort({ createdAt: -1 })
-            .populate('businesscategoryId')
-        // .then(async(product)=>{
-        //     businessData=product;
-        // if(product){
-        //     return res.json({status: true, message: '', product});
-        // }else{
-        //     return res.json({status: false, message: "Not Found"})
-        // }
-        // })
-        // businessData.forEach(async element => {
-        //     if(element.businesscategoryId.status==1){
-        //         productData.push(element);
-        //         await waitFor(60);
-        //     }
-        // });
-        //await waitFor(500);
-        if (productData) {
-            return res.json({ status: true, message: '', productData });
+        productList = await product.find().limit(10).sort({ createdAt: -1 })
+            .populate('businesscategoryId');
+
+        let cartTotal = await getCartItemsCount(req.body.userId);
+
+        if (Array.isArray(cartTotal)) {
+            cartTotal = cartTotal.length;
         } else {
-            return res.json({ status: false, message: "Not Found" })
+            cartTotal = 0;
+        }
+
+        if (productList) {
+            return res.send({ status: true, message: '', productList, cartTotal });
+        } else {
+            return res.send({ status: false, message: "Not Found" })
         }
     } catch (error) {
+        console.log("object", error)
         return res.json({ status: false, message: "Something Went Wrong" });
     }
 })
 
-var fetchProduct = ((req, res) => {
+const fetchProduct = ((req, res) => {
     try {
         product.find({ subCategoryId: req.body.subcategoryid })
             .populate('businesscategoryId', 'businesscategory')
@@ -52,47 +46,48 @@ var fetchProduct = ((req, res) => {
 })
 
 
-var productDetail = (async (req, res) => {
+const productDetail = (async (req, res) => {
     try {
         let productData = await product.findOne({ _id: req.body.productId })
             .populate('businesscategoryId', 'businesscategory')
             .populate('categoryId', 'category')
             .populate('subCategoryId', 'subcategory')
 
-        var obj = {}
-        var isCart = "0"
+        let cartQuantity = "0"
 
-        const cartData = await cart.findOne({ productId: productData._id, userId: req.body.userId ,isDeleted: false})
+        const cartData = await cart.findOne({
+            productId: productData._id,
+            userId: req.body.userId,
+            isDeleted: false
+        })
         if (cartData) {
-            isCart = cartData.quantity
+            cartQuantity = cartData.quantity
         } else {
-            isCart = 0
+            cartQuantity = 0
         }
 
-        const wishlistData = await wishlist.findOne({ productId: productData._id, userId: req.body.userId })
+        const wishlistData = await wishlist.findOne({
+            productId: productData._id,
+            userId: req.body.userId
+        })
         if (wishlistData) {
             isWishlist = 1
         } else {
             isWishlist = 0
         }
 
-        obj = {
-            "product": productData,
-            "isCart": isCart,
-            "isWishlist": isWishlist
-        }
-
-        productData = obj;
 
         let similarProduct = [];
         if (productData) {
-            const similarProductData = await product2.find({ subCategoryId: productData.product.subCategoryId })
+            const similarProductData = await product.find({
+                subCategoryId: productData.subCategoryId
+            })
 
             if (similarProductData) {
                 similarProduct = similarProductData
             }
 
-            return res.json({ status: true, message: '', productData, similarProduct });
+            return res.json({ status: true, message: '', productData, similarProduct, cartQuantity, isWishlist });
         } else {
             return res.json({ status: false, message: "Not Found", similarProduct })
         }
@@ -104,7 +99,7 @@ var productDetail = (async (req, res) => {
 })
 
 
-var searchBox = ((req, res) => {
+const searchBox = ((req, res) => {
     try {
         let query;
         query = { productName: { $regex: req.body.search, $options: 'i' } }
@@ -118,7 +113,7 @@ var searchBox = ((req, res) => {
     }
 });
 
-var fetchProductSpecification = (req, res) => {
+const fetchProductSpecification = (req, res) => {
     try {
         let query;
         let specification = req.body.specification;
@@ -143,9 +138,9 @@ var fetchProductSpecification = (req, res) => {
 }
 
 
-var filterData2 = (async (req, res) => {
-    var businessData = [];
-    var productData = [];
+const filterData2 = (async (req, res) => {
+    const businessData = [];
+    const productData = [];
     try {
         const waitFor = (ms) => new Promise(r => setTimeout(r, ms));
         let query;
@@ -207,9 +202,9 @@ var filterData2 = (async (req, res) => {
     }
 })
 
-var filterData = (async (req, res) => {
-    var businessData = [];
-    var productData = [];
+const filterData = (async (req, res) => {
+    const businessData = [];
+    const productData = [];
     try {
         const waitFor = (ms) => new Promise(r => setTimeout(r, ms));
         let query;

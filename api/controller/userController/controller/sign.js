@@ -1,6 +1,6 @@
 var user = require('../../../../model/vendorModel/model/vendorSchema');
 var bcrypt = require('bcryptjs');
-const { getCartItemsCount } = require('../controller/userCart')
+
 var registerUser = ((req, res) => {
     try {
         user.findOne({ email: req.body.email }).then((response) => {
@@ -86,8 +86,6 @@ var login = ((req, res) => {
             if (doc) {
                 if (doc.status.activeEmail == true) {
                     if (await bcrypt.compare(req.body.password, doc.password)) {
-
-                        const cartTotal = await getCartItemsCount(doc._id);
 
                         return res.json({
                             status: true,
