@@ -110,6 +110,7 @@ const getOrderDetails = async (req, res) => {
             .populate('customerId')
             .populate('orderItems.productId')
             .populate('orderItems.vendorId')
+            .populate('addressId')
             .then(async (product) => {
                 if (product.length > 0) {
                     return res.json({ status: true, code: 100, message: '', product: product[0] });

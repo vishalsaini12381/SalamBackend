@@ -199,6 +199,7 @@ router.post('/user/fetchVendorList', userVendor.fetchVendorList);
 router.post('/user/fetchSpecification', UserSpecification.fetchSpecification);
 
 router.post('/user/addToCart', userCart.addToCart);
+router.post('/user/removeProduct', userCart.removeProductFromCart);
 router.post('/user/addToWishlist', userCart.addToWishlist);
 router.post('/user/myCart', userCart.myCart);
 router.post('/user/myWishlist', userCart.myWishlist);

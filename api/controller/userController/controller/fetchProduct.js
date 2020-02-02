@@ -6,8 +6,23 @@ const { getCartItemsCount } = require('../controller/userCart')
 const fetchHomeProduct = (async (req, res) => {
     let productList = [];
     try {
-        productList = await product.find().limit(10).sort({ createdAt: -1 })
-            .populate('businesscategoryId');
+        // productList = await product.find().limit(10).sort({ createdAt: -1 })
+        //     .populate('businesscategoryId')
+        //     .populate({ path: 'userId', match: { adminStatus: { '$eq': 'Verify' } } })
+
+        productList = await product.aggregate([
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'userId',
+                    foreignField: '_id',
+                    as: 'user'
+                }
+            },
+            { '$unwind': '$user' },
+            { '$match': { "user.adminStatus": { '$eq': 'Verify' } } },
+            { '$sort': { 'createdAt': 1 } },
+            { '$limit': 10 }]);
 
         let cartTotal = await getCartItemsCount(req.body.userId);
 
@@ -52,6 +67,7 @@ const productDetail = (async (req, res) => {
             .populate('businesscategoryId', 'businesscategory')
             .populate('categoryId', 'category')
             .populate('subCategoryId', 'subcategory')
+            .populate('userId')
 
         let cartQuantity = "0"
 
@@ -61,7 +77,7 @@ const productDetail = (async (req, res) => {
             isDeleted: false
         })
         if (cartData) {
-            cartQuantity = cartData.quantity
+            cartQuantity = parseInt(cartData.quantity)
         } else {
             cartQuantity = 0
         }

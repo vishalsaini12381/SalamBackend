@@ -13,7 +13,7 @@ var addToCart = async (req, res) => {
 
         const productDetails = await products.findOne({ _id: req.body.productId });
         let updatedQuantity = 0;
-
+        let cartQuantity = 0;
 
         if (productInCart != undefined && Object.keys(productInCart).length > 0) {
 
@@ -35,8 +35,10 @@ var addToCart = async (req, res) => {
                             amount: cartAmount,
                             total: cartTotal
                         });
+                    cartQuantity = totalUnit;
                     message = 'cart updated successfully.'
                 } else {
+                    cartQuantity = productInCart.quantity;
                     message = 'Out of stock.';
                     success = false;
                 }
@@ -56,10 +58,11 @@ var addToCart = async (req, res) => {
                         amount: cartAmount,
                         total: cartTotal
                     });
+                cartQuantity = totalUnit;
                 message = 'cart updated successfully.'
             } else {
                 await cart.findByIdAndRemove(productInCart._id);
-
+                cartQuantity = totalUnit;
                 updatedQuantity = parseInt(productDetails.quantity) + parseInt(productInCart.quantity);
                 message = 'Item removed from cart.'
             }
@@ -83,17 +86,19 @@ var addToCart = async (req, res) => {
                 createdAt: new Date(),
             });
 
-            const cartData = await userCart.save()
+            const cartData = await userCart.save();
             updatedQuantity = productDetails.quantity - quantity;
+            cartQuantity = totalUnit;
             message = 'Item successfully added in cart.'
         } else {
+            cartQuantity = productInCart.quantity;
             message = 'Out of stock.'
             success = false;
         }
         await products.findOneAndUpdate({ _id: req.body.productId }, { quantity: updatedQuantity });
         let cartTotal = await getCartItemsCount(req.body.userId);
-        
-        if(Array.isArray(cartTotal))
+
+        if (Array.isArray(cartTotal))
             cartTotal = cartTotal.length;
         else
             cartTotal = 0;
@@ -103,6 +108,7 @@ var addToCart = async (req, res) => {
             status: true,
             message,
             cartTotal,
+            cartQuantity,
             code: 200,
             data: []
         });
@@ -111,6 +117,34 @@ var addToCart = async (req, res) => {
         return res.json({ status: false, message: 'Something Went Wrong', error: error });
     }
 }
+
+const removeProductFromCart = async (req, res) => {
+    try {
+        const removedProduct = await cart.deleteMany({ productId: req.body.productId });
+        const productDetails = await products.findOne({ _id: req.body.productId });
+        let updatedQuantity = 0;
+        if (productDetails) {
+            updatedQuantity += parseInt(req.body.cartTotal);
+            await products.findOneAndUpdate({ _id: req.body.productId }, { quantity: updatedQuantity });
+        }
+
+        const myCartProduct = await cart.find({ userId: mongoose.Types.ObjectId(req.body.userId), isDeleted: false })
+            .populate('productId');
+
+        if (!myCartProduct)
+            throw "cart empty";
+
+        res.json({
+            status: true,
+            product: myCartProduct,
+            cartTotal: myCartProduct.length,
+            message: "Product remove successfully"
+        })
+    } catch (error) {
+        return res.json({ status: false, message: 'Something Went Wrong', error: error });
+    }
+}
+
 
 var addToWishlist = ((req, res) => {
     try {
@@ -122,7 +156,8 @@ var addToWishlist = ((req, res) => {
                         status: true,
                         message: 'Item removed from wishlist.',
                         code: 100,
-                        data: []
+                        data: [],
+                        isWishlist: 0
                     });
                 })
             } else {
@@ -140,7 +175,8 @@ var addToWishlist = ((req, res) => {
                             status: true,
                             message: 'Item successfully added in wishlist.',
                             code: 100,
-                            data: []
+                            data: [],
+                            isWishlist: 1
                         });
                     }
                 })
@@ -152,7 +188,7 @@ var addToWishlist = ((req, res) => {
 })
 
 var myCart = (async (req, res) => {
-    cart.find({ userId: mongoose.Types.ObjectId(req.body.userId), isDeleted: false })
+    cart.find({ userId: mongoose.Types.ObjectId(req.body.userId), isDeleted: false, quantity : {'$ne' : 0 } })
         .populate('productId')
         .then(async (product) => {
             if (product.length > 0) {
@@ -167,7 +203,7 @@ var myCart = (async (req, res) => {
 })
 
 const getCartItemsCount = (userId) => {
-    return cart.find({ userId: mongoose.Types.ObjectId(userId), isDeleted: false });
+    return cart.find({ userId: mongoose.Types.ObjectId(userId), isDeleted: false, quantity: { '$ne': 0 } });
 }
 
 var myWishlist = (async (req, res) => {
@@ -273,4 +309,4 @@ var deleteAddress = (async (req, res) => {
 })
 
 
-module.exports = { addToCart, addToWishlist, myCart, getCartItemsCount, myWishlist, getAddress, addAddress, deleteAddress, getSingleAddress };
+module.exports = { addToCart, removeProductFromCart, addToWishlist, myCart, getCartItemsCount, myWishlist, getAddress, addAddress, deleteAddress, getSingleAddress };
