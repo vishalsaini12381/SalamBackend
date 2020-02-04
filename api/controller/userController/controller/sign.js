@@ -103,7 +103,7 @@ var login = ((req, res) => {
                             city: doc.city,
                             state: doc.state,
                             country: doc.country,
-                            cartTotal
+                            // cartTotal
                         })
                     } else {
                         return res.json({ status: false, message: 'Incorrect Password' });
