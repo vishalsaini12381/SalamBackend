@@ -11,6 +11,7 @@ const confirmCashOrder = async (req, res) => {
         let { orderItemsArray, totalOrderCost, cartIdArray } = await getCartDetails(req.body.userId);
 
         const newOrder = new NewOrder({
+            addressId : req.body.addressId,
             customerId: req.body.userId,
             orderStatus: 'Completed',
             orderItems: orderItemsArray,

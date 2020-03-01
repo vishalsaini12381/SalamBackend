@@ -2,21 +2,30 @@
 const NewOrder = require('../../../../model/orders.model');
 const Transaction = require('../../../../model/transaction.model')
 const User = require('../../../../model/vendorModel/model/vendorSchema')
-var product = require('../../../../model/products.model');
-var address = require('../../../../model/userModel/model/shippingAddressModel');
+const ProductModel = require('../../../../model/products.model');
+const address = require('../../../../model/userModel/model/shippingAddressModel');
 var mongoose = require('mongoose');
 
 var getAllOrder = ((req, res) => {
     try {
-        NewOrder.find({ vendorId: { $elemMatch: { $eq: mongoose.Types.ObjectId(req.body.vendorId) } } })
-            .populate('userId')
-            .then((user) => {
-
-                if (user) {
-                    return res.json({ status: true, message: '', user })
-                } else {
-                    return res.json({ status: false, message: 'Product Not Found' });
-                }
+        NewOrder
+            // .find({ vendorId: { $elemMatch: { $eq: mongoose.Types.ObjectId(req.body.vendorId) } } })
+            .aggregate([
+                { $match: { "isDeleted": false } },
+                {
+                    $lookup:
+                    {
+                        from: 'users',
+                        localField: 'customerId',
+                        foreignField: '_id',
+                        as: "customer"
+                    }
+                },
+                { $unwind: "$orderItems" },
+                { $match: { "orderItems.vendorId": mongoose.Types.ObjectId(req.body.vendorId) } }
+            ])
+            .then((myOrders) => {
+                return res.json({ status: true, message: '', myOrders })
             })
     } catch (error) {
         return res.json({ status: false, message: 'Some Error' });
@@ -24,58 +33,45 @@ var getAllOrder = ((req, res) => {
 });
 
 var getOrderDetail = (async (req, res) => {
-    var productData = [];
-    var resultData = [];
-    var orderProductData = [];
-    var addressData = [];
     try {
-        const waitFor = (ms) => new Promise(r => setTimeout(r, ms));
-        NewOrder.findOne({ _id: req.body.orderId })
-            .populate('userId')
-            .then(async (user) => {
-                if (user) {
-                    productData = user;
+        let resultData = await NewOrder.aggregate([
+            { $match: { "isDeleted": false } },
+            { $unwind: "$orderItems" },
+            { $match: { "orderItems._id": mongoose.Types.ObjectId(req.body.orderId) } },
+            {
+                $lookup:
+                {
+                    from: 'users',
+                    localField: 'customerId',
+                    foreignField: '_id',
+                    as: "customer"
                 }
-            })
-        await waitFor(100);
-        productData.product.forEach(async element => {
-
-            product.findOne({ _id: element.productId })
-                .then(async (getProductData) => {
-                    if (getProductData) {
-                        var obj = {
-                            "orderProductData": element,
-                            "vendorId": getProductData.userId,
-                            "businesscategoryId": getProductData.businesscategoryId,
-                            "categoryId": getProductData.categoryId,
-                            "subCategoryId": getProductData.subCategoryId,
-                            "file1": getProductData.file1,
-                            "productName": getProductData.productName,
-                        }
-                        orderProductData.push(obj);
-                        await waitFor(60);
-                    }
-                })
-        })
-        await waitFor(100);
-
-        address.findOne({ _id: productData.addressId })
-            .then(async (getAddress) => {
-                if (getAddress) {
-                    addressData.push(getAddress);
-                    await waitFor(60);
+            },
+            {
+                $lookup:
+                {
+                    from: 'products',
+                    localField: 'orderItems.productId',
+                    foreignField: '_id',
+                    as: "product"
                 }
-            })
-        await waitFor(100);
-        var resObj = {
-            "orderDetail": productData,
-            "productDetail": orderProductData,
-            "addressData": addressData
+            },
+            {
+                $lookup:
+                {
+                    from: 'shippingaddresses',
+                    localField: 'addressId',
+                    foreignField: '_id',
+                    as: "address"
+                }
+            }]);
+        if (Array.isArray(resultData) && resultData.length > 0) {
+            res.json({ status: false, message: 'Successfully data fetched', order: resultData[0] });
         }
-        resultData.push(resObj);
-        // await waitFor(200);
-        return res.json({ status: false, message: 'Some Error', resultData });
+
+        res.json({ status: false, message: 'Successfully data fetched', order: {} });
     } catch (error) {
+        console.log("object", error)
         return res.json({ status: false, message: 'Some Error' });
     }
 });
@@ -197,9 +193,6 @@ const refundProcessing = async (req, res) => {
         } else {
             res.json({ success: true, message: 'Refund initiated sucessfully', data: transData });
         }
-
-
-
     } catch (error) {
         console.log("object", error)
         res.status(500).json({ success: false, message: 'Some Error' });
@@ -207,10 +200,6 @@ const refundProcessing = async (req, res) => {
 }
 
 var getOrderDetailAdmin = async (req, res) => {
-    // var productData = [];
-    // var resultData = [];
-    // var orderProductData = [];
-    // var addressData = [];
     try {
         const orderData = await NewOrder.findOne({ _id: req.body.orderId })
             .populate('customerId')
@@ -225,48 +214,75 @@ var getOrderDetailAdmin = async (req, res) => {
                 data: []
             })
         }
-
-        // await waitFor(100);
-        // productData.product.forEach(async element => {
-
-        //     product.findOne({ _id: element.productId })
-        //         .then(async (getProductData) => {
-        //             if (getProductData) {
-        //                 var obj = {
-        //                     "orderProductData": element,
-        //                     "vendorId": getProductData.userId,
-        //                     "businesscategoryId": getProductData.businesscategoryId,
-        //                     "categoryId": getProductData.categoryId,
-        //                     "subCategoryId": getProductData.subCategoryId,
-        //                     "file1": getProductData.file1,
-        //                     "productName": getProductData.productName,
-        //                 }
-        //                 orderProductData.push(obj);
-        //                 await waitFor(60);
-        //             }
-        //         })
-        // })
-        // await waitFor(100);
-
-        // address.findOne({ _id: productData.addressId })
-        //     .then(async (getAddress) => {
-        //         if (getAddress) {
-        //             addressData.push(getAddress);
-        //             await waitFor(60);
-        //         }
-        //     })
-        // await waitFor(100);
-        // var resObj = {
-        //     "orderDetail": productData,
-        //     "productDetail": orderProductData,
-        //     "addressData": addressData
-        // }
-        // resultData.push(resObj);
-        // await waitFor(200);
         return res.json({ success: true, message: 'Data fetched successfully', data: orderData });
     } catch (error) {
-        return res.json({ status: false, message: 'Some Error' });
+        res.json({ status: false, message: 'Some Error' });
     }
 };
 
-module.exports = { getAllOrder, getOrderDetail, getAllOrderAdmin, getOrderDetailAdmin, getAllAdminReturnRequest, refundProcessing };
+// get dashboard
+const getVendorDashboard = async (req, res) => {
+    try {
+        const vendorId = req.params.vendorId;
+
+        const numberOfProduct = await ProductModel.find({ 'userId': vendorId });
+
+        const totalOrders = await NewOrder.aggregate([
+            { $unwind: "$orderItems" },
+            {
+                $match: {
+                    "orderItems.vendorId": mongoose.Types.ObjectId(vendorId)
+                }
+            }
+        ])
+
+        res.json({
+            success: true,
+            message: 'Data fetched successfully',
+            numberOfProduct: numberOfProduct.length,
+            totalOrders: totalOrders.length
+        });
+
+    } catch (error) {
+        res.json({ status: false, message: 'Some Error' });
+    }
+}
+
+const getRecentOrderList = async (req, res) => {
+    const vendorId = req.params.vendorId;
+
+    NewOrder
+        .aggregate([
+            { $match: { "isDeleted": false } },
+            {
+                $lookup:
+                {
+                    from: 'users',
+                    localField: 'customerId',
+                    foreignField: '_id',
+                    as: "customer"
+                }
+            },
+            {
+                $lookup:
+                {
+                    from: 'shippingaddresses',
+                    localField: 'addressId',
+                    foreignField: '_id',
+                    as: "address"
+                }
+            },
+            { $unwind: "$orderItems" },
+            { $match: { "orderItems.vendorId": mongoose.Types.ObjectId(vendorId) } },
+            { $limit : 10 },
+            { $sort : { updatedAt : -1 } }
+        ])
+        .then(data => {
+            res.json({ status: true, message: 'Successfully fetched recent list', recentOrderList: data });
+        })
+        .catch(error => {
+            res.json({ status: false, message: 'Some Error' });
+        })
+}
+
+module.exports = { getAllOrder, getRecentOrderList, getVendorDashboard, getOrderDetail, getAllOrderAdmin, getOrderDetailAdmin, getAllAdminReturnRequest, refundProcessing };

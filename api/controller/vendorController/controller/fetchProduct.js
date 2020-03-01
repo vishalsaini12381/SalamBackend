@@ -114,6 +114,8 @@ var editProduct = ((req, res) => {
                             })
                         }
                     })
+                }else{
+                    console.log('------------>>>>')
                 }
             })
     } catch (error) {

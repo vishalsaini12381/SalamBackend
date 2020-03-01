@@ -87,6 +87,26 @@ var deleteVendor = ((req, res) => {
     }
 })
 
+const getRecentCustomer = async (req, res) => {
+    try {
+        const customerList = await vendor.find({ accountType: 'User' })
+            .sort({ _id: -1 })
+            .limit(10);
+
+        const totalCustomer = await vendor.find({ accountType: 'User' });
+
+        res.json({
+            status: false,
+            message: 'Successfully fetched the data',
+            customerList,
+            totalCustomer: totalCustomer.length
+        })
+    } catch (error) {
+        return res.json({ status: false, message: "Something Went Wrong" });
+    }
+}
 
 
-module.exports = { vendorList, fetchVendorList, editVendorList, deleteVendor };
+
+
+module.exports = { getRecentCustomer, vendorList, fetchVendorList, editVendorList, deleteVendor };
