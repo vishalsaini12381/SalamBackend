@@ -1,3 +1,4 @@
+require('dotenv').config()
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
@@ -18,7 +19,7 @@ app.use(validator());
 
 mongoose.set('useCreateIndex', true);
 
-mongoose.connect('mongodb://localhost:27017/SalamTradeVersion',{useNewUrlParser : true}).then(
+mongoose.connect(`mongodb://localhost:${process.env.DB_PORT}/SalamTradeVersion`,{useNewUrlParser : true}).then(
   (res) =>{
     console.log("Connected to Database Seccessfully...");
   }
