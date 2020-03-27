@@ -12,7 +12,7 @@ var addBrand = ((req, res) => {
 
 
         const brand = new Brand({
-            // file   : req.body.file,
+            file: req.body.file,
             brandName: req.body.brand,
             createdAt: new Date(),
             updateAt: new Date().getTime()
@@ -41,7 +41,7 @@ var addBrand = ((req, res) => {
 
 var fetchBrands = ((req, res) => {
     try {
-        Brand.find({}).then((doc) => {
+        Brand.find({}, {}, { sort: { 'created_at': -1 } }).then((doc) => {
             if (doc) {
                 return res.json({ status: true, message: '', doc });
             } else {
@@ -69,10 +69,11 @@ var updateBrands = ((req, res) => {
     try {
         var detail = {
             brandName: req.body.brandName,
+            file: req.body.file,
         };
         let id = req.params.id;
 
-        Brand.findByIdAndUpdate(id, { $set: { brandName: req.body.brandName, status: true } })
+        Brand.findByIdAndUpdate(id, { $set: { brandName: req.body.brandName, file: req.body.file, status: true } })
             .then((user) => {
                 if (user) {
                     return res.json({ status: true, message: 'Brand Updated', user });
