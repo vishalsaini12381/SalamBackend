@@ -1,4 +1,4 @@
-var Brand = require('../../../../model/adminModel/brandModel');
+var Brand = require('../../../model/adminModel/brandModel');
 
 var addBrand = ((req, res) => {
     try {

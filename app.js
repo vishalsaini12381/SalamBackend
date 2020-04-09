@@ -19,20 +19,21 @@ app.use(validator());
 
 mongoose.set('useCreateIndex', true);
 
-mongoose.connect(`mongodb://localhost:${process.env.DB_PORT}/SalamTradeVersion`,{useNewUrlParser : true}).then(
-  (res) =>{
+mongoose.connect(`mongodb://localhost:${process.env.DB_PORT}/SalamTradeVersion`, { useNewUrlParser: true }).then(
+  (res) => {
     console.log("Connected to Database Seccessfully...");
   }
-).catch((e)=>{
-  console.log("Connection to database failed...",e);
+).catch((e) => {
+  console.log("Connection to database failed...", e);
 });
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 app.use(logger('dev'));
-app.use(bodyParser.json({ limit : '50mb' }));
+app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -41,12 +42,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/api', api);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};

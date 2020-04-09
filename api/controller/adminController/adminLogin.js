@@ -1,5 +1,5 @@
-var admin = require('../../../../model/adminModel/adminModels');
-var vendor = require('../../../../model/vendorModel/model/vendorSchema');
+var admin = require('../../../model/adminModel/adminModels');
+var vendor = require('../../../model/vendorModel/model/vendorSchema');
 var mongoose  = require('mongoose');
 var bcrypt = require('bcryptjs');
 var jwt = require('jsonwebtoken');
@@ -28,7 +28,7 @@ var adminSignup = ((req,res)=>{
 
 var adminLogin = ((req,res)=>{
     try{
-        var log = {
+        const log = {
             email: req.body.email,
             password: req.body.password
         }

@@ -1,4 +1,4 @@
-var product = require('../../../../model/products.model');
+var product = require('../../../model/products.model');
 var mongoose = require('mongoose');
 
 var productList = ((req,res)=>{

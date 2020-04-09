@@ -1,4 +1,4 @@
-var specification = require('../../../../model/adminModel/specificationModel');
+var specification = require('../../../model/adminModel/specificationModel');
 
 var addSpecification = (req,res)=>{
     try{

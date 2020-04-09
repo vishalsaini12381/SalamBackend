@@ -1,6 +1,6 @@
-var business = require('../../../../model/adminModel/businessCategoryModel');
-var category = require('../../../../model/adminModel/categoryModel');
-var subCategory = require('../../../../model/adminModel/subCategoryModel');
+var business = require('../../../model/adminModel/businessCategoryModel');
+var category = require('../../../model/adminModel/categoryModel');
+var subCategory = require('../../../model/adminModel/subCategoryModel');
 
 var mongoose = require('mongoose');
 

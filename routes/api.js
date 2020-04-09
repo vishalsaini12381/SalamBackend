@@ -3,16 +3,16 @@ var router = express.Router();
 var jwt = require('jsonwebtoken');
 var JWTSECRET = 'shivendra123'
 // Admin
-var adminSign = require('../api/controller/adminController/controller/adminLogin');
-var adminVendor = require('../api/controller/adminController/controller/fetchVendorList');
-var adminUser = require('../api/controller/adminController/controller/adminUser');
-var adminProduct = require('../api/controller/adminController/controller/fetchProductList');
-var adminBusiness = require('../api/controller/adminController/controller/businessCategory');
-var adminCategory = require('../api/controller/adminController/controller/category');
-var adminSubCategory = require('../api/controller/adminController/controller/subCategory');
+var adminSign = require('../api/controller/adminController/adminLogin');
+var adminVendor = require('../api/controller/adminController/fetchVendorList');
+var adminUser = require('../api/controller/adminController/adminUser');
+var adminProduct = require('../api/controller/adminController/fetchProductList');
+var adminBusiness = require('../api/controller/adminController/businessCategory');
+var adminCategory = require('../api/controller/adminController/category');
+var adminSubCategory = require('../api/controller/adminController/subCategory');
 var user = require('../model/adminModel/adminModels');
-var adminBrand = require('../api/controller/adminController/controller/addBrand');
-var Specification = require('../api/controller/adminController/controller/specification');
+var adminBrand = require('../api/controller/adminController/addBrand');
+var Specification = require('../api/controller/adminController/specification');
 var adminOrder = require('../api/controller/vendorController/controller/vendorOrder');
 
 //Vendor
