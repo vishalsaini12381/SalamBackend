@@ -7,7 +7,7 @@ require('dotenv').config()
 const app = require('./app');
 const debug = require('debug')('salamserver:server');
 const http = require('http');
-
+const ChatController = require('./api/controller/chat.controller')
 
 /**
  * Get port from environment and store in Express.
@@ -38,10 +38,12 @@ const socket = require('socket.io');
 io = socket(server);
 
 io.on('connection', (socket) => {
-  // console.log(socket.id);
+  console.log(socket.id);
+  socket.removeAllListeners()
 
-  socket.on('SEND_MESSAGE', function (data) {
-    console.log('-----------------',data)
+  socket.on('SEND_MESSAGE', data => {
+    const chat = ChatController.addMessage(data);
+
     io.emit('RECEIVE_MESSAGE', data);
   })
 });

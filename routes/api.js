@@ -99,7 +99,7 @@ router.post('/admin/fetchVendor', adminSign.fetchVendor);
 
 //
 router.post('/admin/vendorList', adminVendor.vendorList);
-router.get('/admin/recent-customer',adminVendor.getRecentCustomer)
+router.get('/admin/recent-customer', adminVendor.getRecentCustomer)
 router.post('/admin/fetchVendorList', adminVendor.fetchVendorList);
 router.post('/admin/editVendorList', adminVendor.editVendorList);
 router.post('/admin/deleteVendor', adminVendor.deleteVendor);
@@ -223,5 +223,8 @@ const { getTransaction } = require('../api/controller/userController/transaction
 
 router.post('/user/transaction', getTransaction);
 router.get('/user/brands', adminBrand.fetchBrands);
+
+const { fetchChat } = require('../api/controller/chat.controller');
+router.post('/user/fetch-chat', fetchChat)
 
 module.exports = router;
