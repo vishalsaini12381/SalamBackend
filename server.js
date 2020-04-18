@@ -44,7 +44,7 @@ io.on('connection', (socket) => {
   socket.on('SEND_MESSAGE', data => {
     const chat = ChatController.addMessage(data);
 
-    io.emit('RECEIVE_MESSAGE', data);
+    io.emit(`RECEIVE_MESSAGE`, data);
   })
 });
 
