@@ -91,7 +91,7 @@ var addToCart = async (req, res) => {
             cartQuantity = totalUnit;
             message = 'Item successfully added in cart.'
         } else {
-            cartQuantity = productInCart.quantity;
+            cartQuantity = productInCart !== null ? productInCart.quantity : 0;
             message = 'Out of stock.'
             success = false;
         }
@@ -103,6 +103,11 @@ var addToCart = async (req, res) => {
         else
             cartTotal = 0;
 
+        const myCart = await cart.find({ userId: mongoose.Types.ObjectId(req.body.userId), isDeleted: false, quantity: { '$ne': 0 } })
+            .populate('productId');
+
+        await wishlist.deleteMany({ userId: req.body.userId, productId: req.body.productId })
+
         res.json({
             success,
             status: true,
@@ -110,10 +115,12 @@ var addToCart = async (req, res) => {
             cartTotal,
             cartQuantity,
             code: 200,
-            data: []
+            data: [],
+            myCart
         });
 
     } catch (error) {
+        console.log("--------------", error)
         return res.json({ status: false, message: 'Something Went Wrong', error: error });
     }
 }
@@ -188,7 +195,7 @@ var addToWishlist = ((req, res) => {
 })
 
 var myCart = (async (req, res) => {
-    cart.find({ userId: mongoose.Types.ObjectId(req.body.userId), isDeleted: false, quantity : {'$ne' : 0 } })
+    cart.find({ userId: mongoose.Types.ObjectId(req.body.userId), isDeleted: false, quantity: { '$ne': 0 } })
         .populate('productId')
         .then(async (product) => {
             if (product.length > 0) {

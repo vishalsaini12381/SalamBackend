@@ -4,7 +4,7 @@ var subCategory = require('../../../model/adminModel/subCategoryModel');
 
 var mongoose = require('mongoose');
 
-var businessCategory = ( async (req, res) => {
+var businessCategory = (async (req, res) => {
     try {
         var Business = new business({
             business_id: 'B-' + Date.now(),
@@ -98,7 +98,7 @@ var updateBusinessCategory = ((req, res) => {
         };
         let id = req.params.id;
 
-        business.findByIdAndUpdate(id, { $set: { businesscategory: req.body.businesscategory, status: req.body.status } })
+        business.findByIdAndUpdate(id, { $set: { businesscategory: req.body.businesscategory, status: req.body.status } }, { new: true })
             .then((user) => {
                 if (user) {
                     return res.json({ status: true, message: 'Business Category Updated', user });

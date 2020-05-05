@@ -6,9 +6,6 @@ const { getCartItemsCount } = require('../controller/userCart')
 const fetchHomeProduct = (async (req, res) => {
     let productList = [];
     try {
-        // productList = await product.find().limit(10).sort({ createdAt: -1 })
-        //     .populate('businesscategoryId')
-        //     .populate({ path: 'userId', match: { adminStatus: { '$eq': 'Verify' } } })
 
         productList = await product.aggregate([
             {

@@ -6,7 +6,7 @@ var fetchBusinesscategory = (async (req, res) => {
     try {
         const data = await businesss
             .aggregate([
-                { $match: { "status": '1' } },
+                { $match: { $or: [{ "status": '1' }, { "status": 'true' }] } },
                 {
                     $lookup: {
                         from: 'products',
