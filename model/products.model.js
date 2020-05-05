@@ -1,11 +1,7 @@
 var mongoose = require('mongoose');
 const ObjectId = mongoose.Schema.Types.ObjectId;
 
-var productSchema = new mongoose.Schema({
-    productId: {
-        type: String,
-        trim: true,
-    },
+var productsSchema = new mongoose.Schema({
     productName: {
         type: String,
         trim: true,
@@ -20,22 +16,23 @@ var productSchema = new mongoose.Schema({
     },
     businesscategoryId: {
         type: ObjectId,
-        ref: 'businesss',
-        default: null
+        ref: 'businesss'
     },
     categoryId: {
         type: ObjectId,
-        ref: 'category',
-        default: null
+        ref: 'category'
     },
     subCategoryId: {
         type: ObjectId,
-        ref: 'subCategory',
-        default: null
+        ref: 'subCategory'
     },
     brandName: {
         type: String,
         trim: true,
+    },
+    file: {
+        type: String,
+        default: null
     },
     file1: {
         type: String,
@@ -54,8 +51,8 @@ var productSchema = new mongoose.Schema({
         default: null
     },
     quantity: {
-        type: String,
-        trim: true,
+        type: Number,
+        default : 0
     },
     status: {
         type: String,
@@ -66,9 +63,12 @@ var productSchema = new mongoose.Schema({
         type: String,
         trim: true,
     },
-
+    isRefundable: { type: Boolean, default: false },
+    returnPolicy: {
+        daysToReturn: { type: Number, default: 0 },
+        conditions: { type: String }
+    },
     specification: [],
-
     createdAt: {
         type: String,
         default: new Date()
@@ -80,7 +80,7 @@ var productSchema = new mongoose.Schema({
     userId: { type: ObjectId, ref: 'user', default: null },
 }, { usePushEach: true });
 
-// productSchema.index({categoryId: 1, subCategoryId: 1}, {unique: true});
-var product = mongoose.model('product', productSchema);
 
-module.exports = product;
+var products = mongoose.model('products', productsSchema);
+
+module.exports = products;

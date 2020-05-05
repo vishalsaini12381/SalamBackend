@@ -1,4 +1,4 @@
-var vendor = require('../../../../model/vendorModel/model/vendorSchema');
+var vendor = require('../../../model/vendorModel/model/vendorSchema');
 var mongoose  = require('mongoose');
 
 var userList = ((req,res)=>{

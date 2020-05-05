@@ -4,7 +4,6 @@ var mongoose = require('mongoose');
 var fetchsubCategory = ((req,res)=>{
     try{
         subCategory.find({categoryId : mongoose.Types.ObjectId(req.body.category) }).then((subcategory)=>{
-            // console.log('DDDDDDDDDDDDDDDD',subcategory);
             if(subcategory){
                 return res.json({status : true, message: '' , subcategory})
             }else{

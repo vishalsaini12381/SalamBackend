@@ -1,4 +1,4 @@
-var product = require('../../../../model/vendorModel/model/productSchema');
+var product = require('../../../model/products.model');
 var mongoose = require('mongoose');
 
 var productList = ((req,res)=>{
@@ -8,7 +8,6 @@ var productList = ((req,res)=>{
         .populate('categoryId','category')
         .populate('userId','name storeName')
         .then((product)=>{
-            console.log('product',product);
          if(product){
              return res.json({status : true , message : '' , product})
          }else{
@@ -27,7 +26,6 @@ var fetchProductList = ((req,res)=>{
         populate('subCategoryId','Subcategory')
         .populate('userId','name storeName')
         .then((resp)=>{
-            console.log('?????????????????????/',resp.subCategoryId);
             if(resp){
                 return res.json({
                     status: true ,
@@ -43,7 +41,10 @@ var fetchProductList = ((req,res)=>{
                     brandName : resp.brandName,
                     quantity : resp.quantity,
                     aboutProduct : resp.aboutProduct,
-                    file : resp.file,
+                    file1 : resp.file1,
+                    file2 : resp.file2,
+                    file3 : resp.file3,
+                    file4 : resp.file4,
                 })
             }
         })
