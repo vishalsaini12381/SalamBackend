@@ -1,18 +1,26 @@
 const ReturnOrder = require('../../../model/returnOrder.model');
 const NewOrder = require('../../../model/orders.model');
+const mongoose = require('mongoose');
+
 exports.returnRequest = async (req, res) => {
 
     try {
 
         const orderId = req.body.orderId;
         const subOrderId = req.body.subOrderId;
-        const isRequestAlreadyRegistered = await NewOrder.aggregate([
-            { $match: { $and: [{ '_id': mongoose.Types.ObjectId(orderId) }, { 'orderItems._id': mongoose.Types.ObjectId(subOrderId) }, { 'orderItems.isRefundRequested': true }] } },
+        const orderDetails = await NewOrder.aggregate([
+            {
+                $match: {
+                    $and: [{ '_id': mongoose.Types.ObjectId(orderId) },
+                    { 'orderItems._id': mongoose.Types.ObjectId(subOrderId) },
+                    { 'orderItems.isRefundRequested': true }]
+                }
+            },
             { $unwind: '$orderItems' },
             { $match: { 'orderItems._id': mongoose.Types.ObjectId(subOrderId) } }
         ])
         // const returnOrderData = await ReturnOrder.findOne({ orderId, subOrderId })
-        if (!(isRequestAlreadyRegistered.length > 0)) {
+        if (orderDetails[0] && orderDetails[0].orderItems && !orderDetails[0].orderItems.isRefundRequested) {
 
             let dataOrderUpdate = await NewOrder.update({
                 '$and':
@@ -20,7 +28,8 @@ exports.returnRequest = async (req, res) => {
             },
                 {
                     '$set': {
-                        'orderItems.$.requestComment' : req.body.requestComment,
+                        'orderItems.$.requestComment': req.body.requestComment,
+                        'orderItems.$.isReturnRequested': true,
                         'orderItems.$.isRefundRequested': true,
                         'orderItems.$.refundRequest.refundRequest': new Date(),
                         'orderItems.$.refundRequest.refundStatus': 'requested'
@@ -36,7 +45,7 @@ exports.returnRequest = async (req, res) => {
             res.send({
                 message: "Data saved successfully",
                 success: true,
-                data
+                data: dataOrderUpdate
             })
         } else {
             res.send({

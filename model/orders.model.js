@@ -29,7 +29,7 @@ var NewOrdersSchema = new mongoose.Schema({
     }],
     shippingCharges: { type: Number, default: 0 },
     totalOrderCost: { type: Number, default: 0 },
-    orderStatus: { type: String, enum: ['Cancelled', 'Completed'] },
+    orderStatus: { type: String, enum: ['Order Placed', 'Cancelled', 'Completed'] },
     paymentType: { type: String, enum: ["cod", "pod", "online", "wallet"] },
     paymentStatus: { type: String, enum: ["success", "failed"] },
     isDeleted: {

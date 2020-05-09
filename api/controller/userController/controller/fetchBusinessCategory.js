@@ -1,6 +1,7 @@
 var businesss = require('../../../../model/adminModel/businessCategoryModel');
 var category = require('../../../../model/adminModel/categoryModel');
 var subcategory = require('../../../../model/adminModel/subCategoryModel');
+const { getCartItemsCount } = require('../controller/userCart')
 
 var fetchBusinesscategory = (async (req, res) => {
     try {
@@ -62,7 +63,16 @@ var fetchBusinesscategory = (async (req, res) => {
                     }
                 }
             ])
-        return res.json({ code: 100, status: true, message: 'Staff List', data });
+
+        let cartTotal = await getCartItemsCount(req.body.userId);
+
+        if (Array.isArray(cartTotal)) {
+            cartTotal = cartTotal.length;
+        } else {
+            cartTotal = 0;
+        }
+
+        return res.json({ code: 100, status: true, message: 'Staff List', data, cartTotal });
 
     } catch (error) {
         return res.json({ status: false, message: 'SomeThing Went Wrong' });

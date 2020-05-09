@@ -1,7 +1,6 @@
 const product = require('../../../../model/products.model');
 const cart = require('../../../../model/userModel/model/cartModel');
 const wishlist = require('../../../../model/userModel/model/wishlistModel');
-const { getCartItemsCount } = require('../controller/userCart')
 
 const fetchHomeProduct = (async (req, res) => {
     let productList = [];
@@ -21,16 +20,9 @@ const fetchHomeProduct = (async (req, res) => {
             { '$sort': { 'createdAt': 1 } },
             { '$limit': 10 }]);
 
-        let cartTotal = await getCartItemsCount(req.body.userId);
-
-        if (Array.isArray(cartTotal)) {
-            cartTotal = cartTotal.length;
-        } else {
-            cartTotal = 0;
-        }
 
         if (productList) {
-            return res.send({ status: true, message: '', productList, cartTotal });
+            return res.send({ status: true, message: '', productList });
         } else {
             return res.send({ status: false, message: "Not Found" })
         }
