@@ -214,10 +214,12 @@ router.post('/user/codOrder', userOrder.confirmCashOrder);
 router.post('/user/myOrders', userOrder.myOrders);
 router.get('/user/myOrders/:id', userOrder.getOrderDetails);
 
+
 router.post('/user/payment', userOrder.payment);
 router.post('/user/filterData', userFetchProduct.filterData);
-router.post('/user/return-request', returnRequest);
-router.post('/user/get-return-request', getReturnOrderRequest);
+
+router.post('/user/myOrders/:orderId/cancel/:subOrderId', userOrder.orderCancelledByUser);
+router.post('/user/myOrders/:orderId/cancel-request/:subOrderId', userOrder.orderCancelRequestByUser);
 
 const { getTransaction } = require('../api/controller/userController/transaction.controller')
 

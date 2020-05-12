@@ -6,7 +6,8 @@ var NewOrdersSchema = new mongoose.Schema({
     orderDate: { type: String, default: new Date() },
     orderItems: [{
         productId: { type: ObjectId, ref: 'products', trim: true },
-        OrderItemStatus: { type: String, enum: ['Ordered', 'Delivered', 'ReturnRefund', 'ReturnExchange', 'Out of Stock'] },
+        orderStatus: { type: String, enum: ['Order Placed', 'Order Accepted', 'Dispatched', 'Delivered', 'Canceled', 'Out of Stock'] },
+        cancelItem: { type: Boolean, default: false },
         totalUnits: { type: Number, default: 0 },
         discount: { type: Number, default: 0 },
         pricePerUnit: { type: Number, default: 0 },
@@ -24,12 +25,11 @@ var NewOrdersSchema = new mongoose.Schema({
         isReturnRequested: { type: Boolean, default: false },
         returnRequest: {
             returnId: { type: ObjectId, ref: "returnOrder" },
-            returnStatus: { type: String, enum: ['requested', 'initiated', 'completed'] }
+            returnStatus: { type: String, enum: ['requested', 'initiated', 'Completed'] }
         },
     }],
     shippingCharges: { type: Number, default: 0 },
     totalOrderCost: { type: Number, default: 0 },
-    orderStatus: { type: String, enum: ['Order Placed', 'Cancelled', 'Completed'] },
     paymentType: { type: String, enum: ["cod", "pod", "online", "wallet"] },
     paymentStatus: { type: String, enum: ["success", "failed"] },
     isDeleted: {
@@ -37,7 +37,7 @@ var NewOrdersSchema = new mongoose.Schema({
         default: false
     },
     addressId: { type: ObjectId, ref: 'shippingAddress', default: null },
-    transactionId: { type: ObjectId, ref: 'transaction', default: null }
+    transactionId: { type: ObjectId, ref: 'transaction', default: null },
 }, { timestamps: true });
 
 var NewOrder = mongoose.model('new_order', NewOrdersSchema);

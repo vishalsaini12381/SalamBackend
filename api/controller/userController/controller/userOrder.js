@@ -3,6 +3,7 @@ var cart = require('../../../../model/userModel/model/cartModel');
 const NewOrder = require('../../../../model/orders.model');
 const user = require('../../../../model/vendorModel/model/vendorSchema');
 const TransctionSchema = require('../../../../model/transaction.model');
+const mongoose = require('mongoose');
 const { sendMail } = require('../../../sendMail')
 
 
@@ -72,7 +73,7 @@ const getCartDetails = async (userId) => {
                 orderItemsArray.push({
                     productId: item.productId.id,
                     productName: item.productId.productName,
-                    OrderItemStatus: 'Ordered',
+                    orderStatus: 'Order Placed',
                     totalUnits: parseFloat(item.quantity) || 0,
                     discount: parseFloat(item.discount) || 0,
                     pricePerUnit: parseFloat(item.price) || 0,
@@ -229,6 +230,132 @@ var payment = async (req, res) => {
     }
 };
 
+const orderCancelledByUser = async (req, res) => {
+    try {
+
+        const { orderId, subOrderId, userId } = req.body;
+
+        let dataOrderUpdate = await NewOrder.update({
+            '$and':
+                [{ '_id': orderId }, { 'orderItems._id': subOrderId }, { 'customerId': userId }]
+        },
+            {
+                '$set': {
+                    'orderItems.$.requestComment': req.body.requestComment,
+                    'orderItems.$.cancelItem': true,
+                    'orderItems.$.isReturnRequested': true,
+                    'orderItems.$.isRefundRequested': true,
+                    'orderItems.$.refundRequest.refundRequest': new Date(),
+                    'orderItems.$.refundRequest.refundStatus': 'requested'
+                }
+            }, { new: true });
+
+        if (!dataOrderUpdate) {
+            res.send({
+                message: "Unable save data",
+                success: false
+            })
+        }
+
+        if (Array.isArray(dataOrderUpdate.orderItems)) {
+            const itemObject = dataOrderUpdate.orderItems.find(item => item._id == subOrderId);
+            sendOrderCancelledMail({ userId: dataOrderUpdate.customerId, cancelledItem: itemObject })
+        }
+        res.send({
+            message: "Item cancelled successfully",
+            success: true
+        })
+
+    } catch (error) {
+        res.status(500).send({
+            message: "Internal Server Error",
+            success: false
+        })
+    }
+}
+
+
+const orderCancelRequestByUser = async (req, res) => {
+    try {
+
+        const { orderId, subOrderId, userId } = req.body;
+
+        const orderDetail = await NewOrder.findOne({ '$and': [{ '_id': orderId }, { 'orderItems._id': subOrderId }, { customerId: userId }] });
+
+        if (!orderDetail) {
+            res.send({
+                message: "Sorry unable to process our request",
+                success: false,
+            })
+        }
+
+        if (Array.isArray(orderDetail.orderItems)) {
+            const itemObject = orderDetail.orderItems.find(item => item._id == subOrderId);
+
+
+            if (!itemObject) {
+                return res.send({
+                    message: "Item does not exist",
+                    success: false
+                })
+            } else if (itemObject.cancelItem) {
+                return res.send({
+                    message: "Item already cancelled",
+                    success: false
+                })
+            }
+            res.send({
+                message: "Item is present",
+                success: true
+            })
+        } else {
+            return res.send({
+                message: "Item does not exist",
+                success: false
+            })
+        }
+
+    } catch (error) {
+        res.status(500).send({
+            success: false,
+            message: error.message,
+        })
+    }
+}
+
+const sendOrderCancelledMail = async ({ userId, cancelledItem }) => {
+    const userData = await user.findById(userId);
+    const vendor = await user.findById(cancelledItem.vendorId);
+
+    const mailOptionsForUser = {
+        from: process.env.SYSTEM_MAIL,
+        to: userData.email,
+        subject: 'Order Cancellation | Salamtrade',
+        html: `<body>
+                <h3>Hello ${userData.firstName}</h1>
+                <br/>
+                <p> <span>Thank you for ordering from us.</span></p></br/>
+                <p><span> Your item number : ${cancelledItem._id} has been cancelled </span></p>
+               
+                </body>`
+    };
+
+    const mailOptionsForVendor = {
+        from: process.env.SYSTEM_MAIL,
+        to: vendor.email,
+        subject: 'Order Cancellation | Salamtrade',
+        html: `<body>
+                <h3>Hello ${vendor.firstName}</h1>
+                <br/>
+                <p><span> Your item purchased : ${cancelledItem._id} has been cancelled by user</span></p>
+               
+                </body>`
+    };
+
+    const sendMailInfoCustomer = await sendMail(mailOptionsForUser);
+    const sendMailInfoVendor = await sendMail(mailOptionsForVendor);
+
+}
 
 const sendOrderConfirmationMail = async ({ userId, orderId, orderItems, totalOrderCost, shippingCharges, paymentType = "cod" }) => {
     const userData = await user.findById(userId);
@@ -281,4 +408,6 @@ const sendOrderConfirmationMail = async ({ userId, orderId, orderItems, totalOrd
 }
 
 
-module.exports = { confirmCashOrder, myOrders, payment, getOrderDetails };
+
+
+module.exports = { confirmCashOrder, myOrders, payment, orderCancelledByUser, orderCancelRequestByUser, getOrderDetails };
