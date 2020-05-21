@@ -2,6 +2,7 @@ var user = require('../../../../model/vendorModel/model/vendorSchema');
 var bcrypt = require('bcryptjs');
 var jwt = require('jsonwebtoken');
 var JWTSECRET = 'shivendra123';
+const {sendMail} = require('../../../sendMail');
 
 var getData = ((req, res) => {
     const token = req.body.token
@@ -265,7 +266,8 @@ var forgetPassword = ((req, res) => {
                               </body>`
 
                     };
-                    transporter.sendMail(mailOptions, function (err, info) {
+                    sendMail(mailOptions)
+                    .then((info, err) =>{
                         if (err) {
                             return res.json({ status: false, message: "Network Error" })
                         }

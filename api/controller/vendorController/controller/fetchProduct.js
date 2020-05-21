@@ -22,13 +22,13 @@ var fetchProduct = ((req, res) => {
 var fetchProductList = ((req, res) => {
     try {
         product.findById({ _id: mongoose.Types.ObjectId(req.body.productId) })
-            .populate('businesscategoryId', 'businesscategory')
+            .populate('businesscategoryId', '_id businesscategory')
             .populate('categoryId', 'category')
             .populate('subCategoryId', 'subcategory')
             .populate('userId', 'name storeName')
             .then((user) => {
                 if (user) {
-                    console.log("object",user.subCategoryId)
+                    console.log("object", user.subCategoryId)
                     return res.json({
                         status: true,
                         message: '',
@@ -43,12 +43,15 @@ var fetchProductList = ((req, res) => {
                         file4: user.file4,
                         productPrice: user.productPrice,
                         discount: user.discount,
+                        businesscategoryId: user.businesscategoryId._id,
                         businesscategory: user.businesscategoryId.businesscategory,
                         category: user.categoryId.category,
+                        subCategoryId: user.subCategoryId._id,
                         subCategory: user.subCategoryId.subcategory,
                         brandName: user.brandName,
                         quantity: user.quantity,
                         aboutProduct: user.aboutProduct,
+                        specification: user.specification
                         //  storeName : user.storeName,
                     })
                 } else {
@@ -84,12 +87,13 @@ var editProduct = ((req, res) => {
                     user.productName = req.body.productName;
                     user.productPrice = req.body.productPrice;
                     user.discount = req.body.discount;
-                    user.businesscategory = req.body.businesscategory,
-                        user.category = req.body.category;
+                    user.businesscategory = req.body.businesscategory;
+                    user.category = req.body.category;
                     user.subCategory = req.body.subCategory;
                     user.brandName = req.body.brandName;
                     user.quantity = req.body.quantity;
                     user.aboutProduct = req.body.aboutProduct;
+                    user.specification = req.body.specification;
 
                     user.save(function (err, resp) {
                         if (err) {
@@ -110,11 +114,12 @@ var editProduct = ((req, res) => {
                                 subCategory: resp.subCategory,
                                 brandName: resp.brandName,
                                 quantity: resp.quantity,
-                                aboutProduct: resp.aboutProduct
+                                aboutProduct: resp.aboutProduct,
+                                specification : resp.specification
                             })
                         }
                     })
-                }else{
+                } else {
                 }
             })
     } catch (error) {

@@ -236,11 +236,18 @@ const getVendorDashboard = async (req, res) => {
             }
         ])
 
+        const revenueObj = await NewOrder.aggregate([
+            { $match: { "isDeleted": false } },
+            { $unwind: "$orderItems" },
+            { $match: { "orderItems.vendorId": mongoose.Types.ObjectId(vendorId), "orderItems.orderStatus": { $ne: "Canceled" } } },
+            { $group: { _id: null, revenue: { $sum: "$orderItems.totalOrderItemAmount" }, } }
+        ])
         res.json({
             success: true,
             message: 'Data fetched successfully',
             numberOfProduct: numberOfProduct.length,
-            totalOrders: totalOrders.length
+            totalOrders: totalOrders.length,
+            totalRevenue: revenueObj[0].revenue
         });
 
     } catch (error) {
@@ -274,8 +281,8 @@ const getRecentOrderList = async (req, res) => {
             },
             { $unwind: "$orderItems" },
             { $match: { "orderItems.vendorId": mongoose.Types.ObjectId(vendorId) } },
-            { $limit : 10 },
-            { $sort : { updatedAt : -1 } }
+            { $limit: 10 },
+            { $sort: { updatedAt: -1 } }
         ])
         .then(data => {
             res.json({ status: true, message: 'Successfully fetched recent list', recentOrderList: data });
@@ -285,4 +292,24 @@ const getRecentOrderList = async (req, res) => {
         })
 }
 
-module.exports = { getAllOrder, getRecentOrderList, getVendorDashboard, getOrderDetail, getAllOrderAdmin, getOrderDetailAdmin, getAllAdminReturnRequest, refundProcessing };
+const changeOrderStatus = async (req, res) => {
+
+    try {
+
+        const { orderId, orderStatus } = req.body;
+
+        const orderUpdate = await NewOrder.update({ "orderItems._id": mongoose.Types.ObjectId(orderId) },
+            { $set: { "orderItems.$.orderStatus": orderStatus } }, { new: true });
+
+        const isStatusUpdated = orderUpdate.ok === 1 && orderUpdate.nModified === 1;
+        res.json({ status: true, message: 'Status updated successfully', isStatusUpdated });
+
+    } catch (error) {
+        console.log(';-------', error)
+        res.json({ status: false, message: 'Some Error' });
+    }
+
+}
+
+
+module.exports = { getAllOrder, changeOrderStatus, getRecentOrderList, getVendorDashboard, getOrderDetail, getAllOrderAdmin, getOrderDetailAdmin, getAllAdminReturnRequest, refundProcessing };

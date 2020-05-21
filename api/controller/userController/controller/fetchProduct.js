@@ -1,6 +1,7 @@
 const product = require('../../../../model/products.model');
 const cart = require('../../../../model/userModel/model/cartModel');
 const wishlist = require('../../../../model/userModel/model/wishlistModel');
+const mongoose = require('mongoose');
 
 const fetchHomeProduct = (async (req, res) => {
     let productList = [];
@@ -34,8 +35,22 @@ const fetchHomeProduct = (async (req, res) => {
 
 const fetchProduct = ((req, res) => {
     try {
-        product.find({ subCategoryId: req.body.subcategoryid })
-            .populate('businesscategoryId', 'businesscategory')
+        product
+            .aggregate([
+                { '$match': { 'subCategoryId': mongoose.Types.ObjectId(req.body.subcategoryid) } },
+                {
+                    $lookup: {
+                        from: 'users',
+                        localField: 'userId',
+                        foreignField: '_id',
+                        as: 'user'
+                    }
+                },
+                { '$unwind': '$user' },
+                { '$match': { "user.adminStatus": { '$eq': 'Verify' } } },
+                { '$sort': { 'createdAt': 1 } }])
+            // find({ subCategoryId: req.body.subcategoryid })
+            //     .populate('businesscategoryId', 'businesscategory')
             .then((product) => {
 
                 if (product) {

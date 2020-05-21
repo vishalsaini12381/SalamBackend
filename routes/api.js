@@ -170,8 +170,10 @@ router.post('/vendor/fetchsubCategory', SubCategory.fetchsubCategory);
 router.post('/vendor/fetchSpecification', VendorSpecification.fetchSpecification);
 router.post('/vendor/getAllOrder', vendorOrder.getAllOrder);
 router.post('/vendor/getOrderDetail', vendorOrder.getOrderDetail);
-router.get('/vendor/dashboard/:vendorId', vendorOrder.getVendorDashboard)
-router.get('/vendor/dashboard/recent-order/:vendorId', vendorOrder.getRecentOrderList)
+router.get('/vendor/dashboard/:vendorId', vendorOrder.getVendorDashboard);
+router.get('/vendor/dashboard/recent-order/:vendorId', vendorOrder.getRecentOrderList);
+router.post('/order/:orderId/change-order-status', vendorOrder.changeOrderStatus);
+
 
 /* GET Users Api listing. */
 router.post('/user/Signup', Sign.registerUser);
