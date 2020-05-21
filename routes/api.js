@@ -104,6 +104,8 @@ router.post('/admin/fetchVendorList', adminVendor.fetchVendorList);
 router.post('/admin/editVendorList', adminVendor.editVendorList);
 router.post('/admin/deleteVendor', adminVendor.deleteVendor);
 router.post('/admin/userList', adminUser.userList);
+router.get('/admin/userdetail/:id', adminUser.userDetail);
+
 router.post('/admin/productList', adminProduct.productList);
 router.post('/admin/fetchProductList', adminProduct.fetchProductList);
 router.post('/admin/businessCategory', adminBusiness.businessCategory);
