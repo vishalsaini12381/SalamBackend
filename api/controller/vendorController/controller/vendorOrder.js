@@ -80,8 +80,15 @@ var getOrderDetail = (async (req, res) => {
 
 var getAllOrderAdmin = ((req, res) => {
     try {
-        NewOrder.find({})
-            .populate('customerId')
+        NewOrder.aggregate([{ $unwind: '$orderItems' },
+        {
+            $lookup: {
+                "from": "users",
+                "localField": "customerId",
+                "foreignField": "_id",
+                "as": "customerId"
+            }
+        }])
             .then((order) => {
                 if (order) {
                     return res.json({ status: true, message: '', order })
@@ -201,48 +208,48 @@ const refundProcessing = async (req, res) => {
 
 var getOrderDetailAdmin = async (req, res) => {
 
-        try {
-            let resultData = await NewOrder.aggregate([
-                { $match: { "isDeleted": false } },
-                { $unwind: "$orderItems" },
-                { $match: { "orderItems._id": mongoose.Types.ObjectId(req.body.orderId) } },
+    try {
+        let resultData = await NewOrder.aggregate([
+            { $match: { "isDeleted": false } },
+            { $unwind: "$orderItems" },
+            { $match: { "orderItems._id": mongoose.Types.ObjectId(req.body.orderId) } },
+            {
+                $lookup:
                 {
-                    $lookup:
-                    {
-                        from: 'users',
-                        localField: 'customerId',
-                        foreignField: '_id',
-                        as: "customer"
-                    }
-                },
+                    from: 'users',
+                    localField: 'customerId',
+                    foreignField: '_id',
+                    as: "customer"
+                }
+            },
+            {
+                $lookup:
                 {
-                    $lookup:
-                    {
-                        from: 'products',
-                        localField: 'orderItems.productId',
-                        foreignField: '_id',
-                        as: "product"
-                    }
-                },
+                    from: 'products',
+                    localField: 'orderItems.productId',
+                    foreignField: '_id',
+                    as: "product"
+                }
+            },
+            {
+                $lookup:
                 {
-                    $lookup:
-                    {
-                        from: 'shippingaddresses',
-                        localField: 'addressId',
-                        foreignField: '_id',
-                        as: "address"
-                    }
-                }]);
-            if (Array.isArray(resultData) && resultData.length > 0) {
-                res.json({ status: false, message: 'Successfully data fetched', order: resultData[0] });
-            }
-
-            res.json({ status: false, message: 'Successfully data fetched', order: {} });
-        } catch (error) {
-            console.log("object", error)
-            return res.json({ status: false, message: 'Some Error' });
+                    from: 'shippingaddresses',
+                    localField: 'addressId',
+                    foreignField: '_id',
+                    as: "address"
+                }
+            }]);
+        if (Array.isArray(resultData) && resultData.length > 0) {
+            res.json({ status: false, message: 'Successfully data fetched', order: resultData[0] });
         }
+
+        res.json({ status: false, message: 'Successfully data fetched', order: {} });
+    } catch (error) {
+        console.log("object", error)
+        return res.json({ status: false, message: 'Some Error' });
     }
+}
 
 // get dashboard
 const getVendorDashboard = async (req, res) => {

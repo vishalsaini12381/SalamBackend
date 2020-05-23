@@ -241,11 +241,11 @@ const orderCancelledByUser = async (req, res) => {
         },
             {
                 '$set': {
-                    'orderItems.$.requestComment': req.body.requestComment,
+                    'orderItems.$.refundRequest.requestComment': req.body.requestComment,
                     'orderItems.$.cancelItem': true,
                     'orderItems.$.isReturnRequested': true,
                     'orderItems.$.isRefundRequested': true,
-                    'orderItems.$.refundRequest.refundRequest': new Date(),
+                    'orderItems.$.refundRequest.refundRequestDate': new Date(),
                     'orderItems.$.refundRequest.refundStatus': 'requested'
                 }
             }, { new: true });
