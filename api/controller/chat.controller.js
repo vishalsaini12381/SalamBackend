@@ -3,7 +3,12 @@ const AdminModel = require("../../model/adminModel/adminModels");
 
 const addMessage = async ({ chatId, message, senderId, receiverId }) => {
     try {
-        const chat = await ChatModel.findOne({ members: { "$in": [senderId, receiverId] } });
+        const chat = await ChatModel.findOne(
+            {
+                $and: [
+                    { members: { "$in": [senderId] } },
+                    { members: { "$in": [receiverId] } }]
+            });
 
         if (chat) {
             const messageObj = {
@@ -36,7 +41,12 @@ const fetchChat = async (req, res) => {
     try {
         const admin = await AdminModel.findOne({}, {});
 
-        const chat = await ChatModel.findOne({ members: { "$in": [senderId, receiverId] } });
+        const chat = await ChatModel.findOne(
+            {
+                $and: [
+                    { members: { "$in": [senderId] } },
+                    { members: { "$in": [receiverId] } }]
+            });
         res.json({
             status: true,
             message: 'Chats fetched successfully',
