@@ -98,8 +98,9 @@ router.get('/admin/adminLogout', adminSign.adminLogout);
 router.post('/admin/fetchVendor', adminSign.fetchVendor);
 
 //
-router.post('/admin/vendorList', adminVendor.vendorList);
-router.get('/admin/recent-customer', adminVendor.getRecentCustomer)
+router.get('/admin/dashboard', adminVendor.getAdminDashboard);
+// router.post('/admin/vendorList', adminVendor.vendorList);
+// router.get('/admin/recent-customer', adminVendor.getRecentCustomer);
 router.post('/admin/fetchVendorList', adminVendor.fetchVendorList);
 router.post('/admin/editVendorList', adminVendor.editVendorList);
 router.post('/admin/deleteVendor', adminVendor.deleteVendor);
