@@ -14,6 +14,7 @@ var user = require('../model/adminModel/adminModels');
 var adminBrand = require('../api/controller/adminController/addBrand');
 var Specification = require('../api/controller/adminController/specification');
 var adminOrder = require('../api/controller/vendorController/controller/vendorOrder');
+const bannerAdmin = require('../api/controller/banner.controller');
 
 //Vendor
 
@@ -145,6 +146,8 @@ router.post('/admin/getAllOrderAdmin', adminOrder.getAllOrderAdmin);
 router.post('/admin/getOrderDetailAdmin', adminOrder.getOrderDetailAdmin);
 router.get('/admin/getAllAdminReturnRequest', adminOrder.getAllAdminReturnRequest);
 router.post('/admin/initiate-refund-process', adminOrder.refundProcessing);
+router.post('/admin/addBanner', bannerAdmin.create);
+router.get('/admin/banner', bannerAdmin.get);
 
 
 /* GET Vendor Api listing. */
