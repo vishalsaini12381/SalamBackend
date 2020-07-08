@@ -120,7 +120,6 @@ var addToCart = async (req, res) => {
         });
 
     } catch (error) {
-        console.log("--------------", error)
         return res.json({ status: false, message: 'Something Went Wrong', error: error });
     }
 }

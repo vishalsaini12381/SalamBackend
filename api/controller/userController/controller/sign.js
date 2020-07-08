@@ -1,7 +1,8 @@
 var user = require('../../../../model/vendorModel/model/vendorSchema');
 var bcrypt = require('bcryptjs');
+const { sendMail } = require('../../../sendMail');
 
-var registerUser = ((req, res) => {
+const registerUser = ((req, res) => {
     try {
         user.findOne({ email: req.body.email }).then((response) => {
             if (response) {
@@ -121,55 +122,64 @@ var login = ((req, res) => {
     }
 })
 
-var forgetPasswprd = ((req, res) => {
+const forgetPasswprd = async (req, res) => {
     const otp = Math.floor(1000 + Math.random() * 9000);
     const email = req.body.email;
     const resetPassToken = otp;
     try {
 
-        if (!email || email == null || email == '') return res.json({ status: false, message: 'Please Enter The Valid E-mail Address' });
+        if (!email || email == null || email == '') {
+            return res.json({ status: false, message: 'Please Enter The Valid E-mail Address' });
+        }
 
-        user.findOne({ email: email }, function (err, User) {
-            if (err) return res.json({ status: false, message: '"Oops There is an Error' });
+        const userInfo = await user.findOne({ email });
 
-            if (!User || User == null || User == '') return res.json({ status: false, message: '"User does not exist"' })
+        if (!userInfo || userInfo == null || userInfo == '') {
+            return res.json({ status: false, message: '"User does not exist"' })
+        }
 
-            if (User.status.activeEmail == false) {
-                return res.json({ status: false, message: "Please activate first, using the link sent to your email address" })
-            } else {
-                var mailOptions = {
-                    from: `shivendra.techgropse@gmail.com`,
-                    to: req.body.email,
-                    subject: 'Forget PassWord | Salamtrade',
-                    html: `
-                       <body>
-                       <h1>Hello ${req.body.email}</h1>
-                      <h2>This is your OTP to reset password: ${otp}.  <a title = "Reset" href = "http://localhost:3100/api/verifyPasswordLink/${resetPassToken}/">Click here to Reset Password </a> </h2>
-                       </body>`
-                };
-                transporter.sendMail(mailOptions, function (err, info) {
-                    if (err) {
-                        return res.json({ status: false, message: "Error sending activation link" });
-                    } else {
-                        User.status.resetPassToken = resetPassToken;
+        if (userInfo.status.activeEmail == false) {
+            return res.json({
+                status: false,
+                message: "Please activate first, using the link sent to your email address"
+            })
+        }
 
-                        User.save(async (err, saved) => {
-                            if (err) return res.json({ status: false, message: "Error. Please try again" });
+        const mailOptions = {
+            from: `basilravi@gmail.com`,
+            to: email,
+            subject: 'Forget PassWord | Salamtrade',
+            html: `<body>
+                    <h1>Hello ${userInfo.firstName}</h1>
+                    <h2>This is your OTP to reset password: ${otp}.  <a title = "Reset" href = "http://localhost:3100/api/verifyPasswordLink/${resetPassToken}/">Click here to Reset Password </a> </h2>
+                    </body>`
+        };
 
-                            if (await saved && saved !== null) {
-                                return res.json({ status: true, email: email, resetPassToken: resetPassToken, message: "Otp sent to your email address To reset your Password" });
-                            } else {
-                                return res.json({ status: false, message: "Please Try Aagain" });
-                            }
-                        })
-                    }
-                })
-            }
-        })
+        const sendMailInfo = await sendMail(mailOptions);
+
+        if (!sendMailInfo) {
+            return res.json({ status: false, message: "Error sending activation link" });
+        }
+
+        userInfo.status.resetPassToken = resetPassToken;
+
+        const updatedUserInfo = await userInfo.save();
+
+        if (!updatedUserInfo) {
+            return res.json({ status: false, message: "Error. Please try again" });
+        }
+
+        return res.json({
+            status: true,
+            email,
+            resetPassToken: resetPassToken,
+            message: "Otp sent to your email address To reset your Password"
+        });
+
     } catch (error) {
-        return res.json({ status: false, message: "SomeThing Went Wrong" });
+        return res.json({ status: false, message: '"Oops There is an Error' });
     }
-})
+}
 
 var verifyPasswordLink = ((req, res) => {
     var Token = req.params.token;

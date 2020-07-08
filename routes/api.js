@@ -14,6 +14,7 @@ var user = require('../model/adminModel/adminModels');
 var adminBrand = require('../api/controller/adminController/addBrand');
 var Specification = require('../api/controller/adminController/specification');
 var adminOrder = require('../api/controller/vendorController/controller/vendorOrder');
+const bannerAdmin = require('../api/controller/banner.controller');
 
 //Vendor
 
@@ -98,12 +99,15 @@ router.get('/admin/adminLogout', adminSign.adminLogout);
 router.post('/admin/fetchVendor', adminSign.fetchVendor);
 
 //
-router.post('/admin/vendorList', adminVendor.vendorList);
-router.get('/admin/recent-customer', adminVendor.getRecentCustomer)
+router.get('/admin/dashboard', adminVendor.getAdminDashboard);
+// router.post('/admin/vendorList', adminVendor.vendorList);
+// router.get('/admin/recent-customer', adminVendor.getRecentCustomer);
 router.post('/admin/fetchVendorList', adminVendor.fetchVendorList);
 router.post('/admin/editVendorList', adminVendor.editVendorList);
 router.post('/admin/deleteVendor', adminVendor.deleteVendor);
 router.post('/admin/userList', adminUser.userList);
+router.get('/admin/userdetail/:id', adminUser.userDetail);
+
 router.post('/admin/productList', adminProduct.productList);
 router.post('/admin/fetchProductList', adminProduct.fetchProductList);
 router.post('/admin/businessCategory', adminBusiness.businessCategory);
@@ -142,6 +146,8 @@ router.post('/admin/getAllOrderAdmin', adminOrder.getAllOrderAdmin);
 router.post('/admin/getOrderDetailAdmin', adminOrder.getOrderDetailAdmin);
 router.get('/admin/getAllAdminReturnRequest', adminOrder.getAllAdminReturnRequest);
 router.post('/admin/initiate-refund-process', adminOrder.refundProcessing);
+router.post('/admin/addBanner', bannerAdmin.create);
+router.get('/admin/banner', bannerAdmin.get);
 
 
 /* GET Vendor Api listing. */
@@ -170,8 +176,10 @@ router.post('/vendor/fetchsubCategory', SubCategory.fetchsubCategory);
 router.post('/vendor/fetchSpecification', VendorSpecification.fetchSpecification);
 router.post('/vendor/getAllOrder', vendorOrder.getAllOrder);
 router.post('/vendor/getOrderDetail', vendorOrder.getOrderDetail);
-router.get('/vendor/dashboard/:vendorId', vendorOrder.getVendorDashboard)
-router.get('/vendor/dashboard/recent-order/:vendorId', vendorOrder.getRecentOrderList)
+router.get('/vendor/dashboard/:vendorId', vendorOrder.getVendorDashboard);
+router.get('/vendor/dashboard/recent-order/:vendorId', vendorOrder.getRecentOrderList);
+router.post('/order/:orderId/change-order-status', vendorOrder.changeOrderStatus);
+
 
 /* GET Users Api listing. */
 router.post('/user/Signup', Sign.registerUser);
@@ -214,10 +222,12 @@ router.post('/user/codOrder', userOrder.confirmCashOrder);
 router.post('/user/myOrders', userOrder.myOrders);
 router.get('/user/myOrders/:id', userOrder.getOrderDetails);
 
+
 router.post('/user/payment', userOrder.payment);
 router.post('/user/filterData', userFetchProduct.filterData);
-router.post('/user/return-request', returnRequest);
-router.post('/user/get-return-request', getReturnOrderRequest);
+
+router.post('/user/myOrders/:orderId/cancel/:subOrderId', userOrder.orderCancelledByUser);
+router.post('/user/myOrders/:orderId/cancel-request/:subOrderId', userOrder.orderCancelRequestByUser);
 
 const { getTransaction } = require('../api/controller/userController/transaction.controller')
 

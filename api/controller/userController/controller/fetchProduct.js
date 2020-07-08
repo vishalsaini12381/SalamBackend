@@ -1,7 +1,7 @@
 const product = require('../../../../model/products.model');
 const cart = require('../../../../model/userModel/model/cartModel');
 const wishlist = require('../../../../model/userModel/model/wishlistModel');
-const { getCartItemsCount } = require('../controller/userCart')
+const mongoose = require('mongoose');
 
 const fetchHomeProduct = (async (req, res) => {
     let productList = [];
@@ -21,16 +21,9 @@ const fetchHomeProduct = (async (req, res) => {
             { '$sort': { 'createdAt': 1 } },
             { '$limit': 10 }]);
 
-        let cartTotal = await getCartItemsCount(req.body.userId);
-
-        if (Array.isArray(cartTotal)) {
-            cartTotal = cartTotal.length;
-        } else {
-            cartTotal = 0;
-        }
 
         if (productList) {
-            return res.send({ status: true, message: '', productList, cartTotal });
+            return res.send({ status: true, message: '', productList });
         } else {
             return res.send({ status: false, message: "Not Found" })
         }
@@ -42,8 +35,22 @@ const fetchHomeProduct = (async (req, res) => {
 
 const fetchProduct = ((req, res) => {
     try {
-        product.find({ subCategoryId: req.body.subcategoryid })
-            .populate('businesscategoryId', 'businesscategory')
+        product
+            .aggregate([
+                { '$match': { 'subCategoryId': mongoose.Types.ObjectId(req.body.subcategoryid) } },
+                {
+                    $lookup: {
+                        from: 'users',
+                        localField: 'userId',
+                        foreignField: '_id',
+                        as: 'user'
+                    }
+                },
+                { '$unwind': '$user' },
+                { '$match': { "user.adminStatus": { '$eq': 'Verify' } } },
+                { '$sort': { 'createdAt': 1 } }])
+            // find({ subCategoryId: req.body.subcategoryid })
+            //     .populate('businesscategoryId', 'businesscategory')
             .then((product) => {
 
                 if (product) {

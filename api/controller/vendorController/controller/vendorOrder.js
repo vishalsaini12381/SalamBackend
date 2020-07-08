@@ -80,8 +80,15 @@ var getOrderDetail = (async (req, res) => {
 
 var getAllOrderAdmin = ((req, res) => {
     try {
-        NewOrder.find({})
-            .populate('customerId')
+        NewOrder.aggregate([{ $unwind: '$orderItems' },
+        {
+            $lookup: {
+                "from": "users",
+                "localField": "customerId",
+                "foreignField": "_id",
+                "as": "customerId"
+            }
+        }])
             .then((order) => {
                 if (order) {
                     return res.json({ status: true, message: '', order })
@@ -200,25 +207,49 @@ const refundProcessing = async (req, res) => {
 }
 
 var getOrderDetailAdmin = async (req, res) => {
+
     try {
-        const orderData = await NewOrder.findOne({ _id: req.body.orderId })
-            .populate('customerId')
-            .populate('addressId')
-            .populate('orderItems.productId')
-            .populate('orderItems.vendorId')
-        // .populate('orderItems.productId.categoryId');
-        if (!orderData) {
-            res.send({
-                success: false,
-                message: 'Order not found',
-                data: []
-            })
+        let resultData = await NewOrder.aggregate([
+            { $match: { "isDeleted": false } },
+            { $unwind: "$orderItems" },
+            { $match: { "orderItems._id": mongoose.Types.ObjectId(req.body.orderId) } },
+            {
+                $lookup:
+                {
+                    from: 'users',
+                    localField: 'customerId',
+                    foreignField: '_id',
+                    as: "customer"
+                }
+            },
+            {
+                $lookup:
+                {
+                    from: 'products',
+                    localField: 'orderItems.productId',
+                    foreignField: '_id',
+                    as: "product"
+                }
+            },
+            {
+                $lookup:
+                {
+                    from: 'shippingaddresses',
+                    localField: 'addressId',
+                    foreignField: '_id',
+                    as: "address"
+                }
+            }]);
+        if (Array.isArray(resultData) && resultData.length > 0) {
+            res.json({ status: false, message: 'Successfully data fetched', order: resultData[0] });
         }
-        return res.json({ success: true, message: 'Data fetched successfully', data: orderData });
+
+        res.json({ status: false, message: 'Successfully data fetched', order: {} });
     } catch (error) {
-        res.json({ status: false, message: 'Some Error' });
+        console.log("object", error)
+        return res.json({ status: false, message: 'Some Error' });
     }
-};
+}
 
 // get dashboard
 const getVendorDashboard = async (req, res) => {
@@ -236,11 +267,18 @@ const getVendorDashboard = async (req, res) => {
             }
         ])
 
+        const revenueObj = await NewOrder.aggregate([
+            { $match: { "isDeleted": false } },
+            { $unwind: "$orderItems" },
+            { $match: { "orderItems.vendorId": mongoose.Types.ObjectId(vendorId), "orderItems.orderStatus": { $ne: "Canceled" } } },
+            { $group: { _id: null, revenue: { $sum: "$orderItems.totalOrderItemAmount" }, } }
+        ])
         res.json({
             success: true,
             message: 'Data fetched successfully',
             numberOfProduct: numberOfProduct.length,
-            totalOrders: totalOrders.length
+            totalOrders: totalOrders.length,
+            totalRevenue: revenueObj[0].revenue
         });
 
     } catch (error) {
@@ -274,8 +312,8 @@ const getRecentOrderList = async (req, res) => {
             },
             { $unwind: "$orderItems" },
             { $match: { "orderItems.vendorId": mongoose.Types.ObjectId(vendorId) } },
-            { $limit : 10 },
-            { $sort : { updatedAt : -1 } }
+            { $limit: 10 },
+            { $sort: { updatedAt: -1 } }
         ])
         .then(data => {
             res.json({ status: true, message: 'Successfully fetched recent list', recentOrderList: data });
@@ -285,4 +323,24 @@ const getRecentOrderList = async (req, res) => {
         })
 }
 
-module.exports = { getAllOrder, getRecentOrderList, getVendorDashboard, getOrderDetail, getAllOrderAdmin, getOrderDetailAdmin, getAllAdminReturnRequest, refundProcessing };
+const changeOrderStatus = async (req, res) => {
+
+    try {
+
+        const { orderId, orderStatus } = req.body;
+
+        const orderUpdate = await NewOrder.update({ "orderItems._id": mongoose.Types.ObjectId(orderId) },
+            { $set: { "orderItems.$.orderStatus": orderStatus } }, { new: true });
+
+        const isStatusUpdated = orderUpdate.ok === 1 && orderUpdate.nModified === 1;
+        res.json({ status: true, message: 'Status updated successfully', isStatusUpdated });
+
+    } catch (error) {
+        console.log(';-------', error)
+        res.json({ status: false, message: 'Some Error' });
+    }
+
+}
+
+
+module.exports = { getAllOrder, changeOrderStatus, getRecentOrderList, getVendorDashboard, getOrderDetail, getAllOrderAdmin, getOrderDetailAdmin, getAllAdminReturnRequest, refundProcessing };

@@ -1,4 +1,5 @@
 var vendor = require('../../../model/vendorModel/model/vendorSchema');
+const NewOrder = require('../../../model/orders.model');
 var mongoose = require('mongoose');
 
 var vendorList = ((req, res) => {
@@ -106,7 +107,51 @@ const getRecentCustomer = async (req, res) => {
     }
 }
 
+const getAdminDashboard = async (req, res) => {
+    try {
+        // ---------------------------------------//
+        const customerList = await vendor.find({ accountType: 'User' })
+            .sort({ _id: -1 })
+            .limit(10);
+        const customerCount = await vendor.find({ accountType: 'User' }).count();
+        // ---------------------------------------//
+
+        // ---------------------------------------//
+        const vendorList = await vendor.find({ accountType: 'Vendor' })
+            .sort({ _id: -1 })
+            .limit(10);
+        const vendorCount = await vendor.find({ accountType: 'Vendor' }).count();
+        // ---------------------------------------//
+
+        // ---------------------------------------//
+        const totalOrders = await NewOrder.aggregate([{ $unwind: "$orderItems" }])
+
+        const revenueObj = await NewOrder.aggregate([
+            { $match: { "isDeleted": false } },
+            { $unwind: "$orderItems" },
+            { $match: { "orderItems.orderStatus": { $ne: "Canceled" } } },
+            { $group: { _id: null, revenue: { $sum: "$orderItems.totalOrderItemAmount" }, } }
+        ])
+
+        // ---------------------------------------//
+
+        res.json({
+            success: true,
+            message: 'Successfully fetched the data',
+            customerList,
+            customerCount,
+            vendorList,
+            vendorCount,
+            ordersCount: totalOrders.length,
+            totalRevenue: revenueObj[0].revenue
+        })
+    } catch (error) {
+        console.log('--------', error)
+        return res.json({ success: false, message: "Something Went Wrong" });
+    }
+}
 
 
 
-module.exports = { getRecentCustomer, vendorList, fetchVendorList, editVendorList, deleteVendor };
+
+module.exports = { getRecentCustomer, getAdminDashboard, vendorList, fetchVendorList, editVendorList, deleteVendor };

@@ -1,21 +1,8 @@
 var user = require('../../../../model/vendorModel/model/vendorSchema');
 var bcrypt = require('bcryptjs');
-var nodemailer = require('nodemailer');
 var jwt = require('jsonwebtoken');
 var JWTSECRET = 'shivendra123';
-
-// var transporter = nodemailer.createTransport({
-//     // service : 'Gmail',
-//     host: 'smtp.mailtrap.io',
-//     secure : false,
-//     port: 587,
-//     auth : {
-//         user:  'b44909bdaefb1c',
-//         pass: '66ff843647784c'
-//     }
-// });
-
-
+const {sendMail} = require('../../../sendMail');
 
 var getData = ((req, res) => {
     const token = req.body.token
@@ -279,7 +266,8 @@ var forgetPassword = ((req, res) => {
                               </body>`
 
                     };
-                    transporter.sendMail(mailOptions, function (err, info) {
+                    sendMail(mailOptions)
+                    .then((info, err) =>{
                         if (err) {
                             return res.json({ status: false, message: "Network Error" })
                         }

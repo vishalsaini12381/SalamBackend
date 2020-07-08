@@ -12,7 +12,7 @@ var businessCategory = (async (req, res) => {
             status: 1
         });
 
-        const businessData = await business.findOne({ businesscategory: req.body.businesscategory });
+        const businessData = await business.findOne({ businesscategory: req.body.businesscategory, status: 1 });
         if (businessData) {
             return res.json({
                 status: false,
@@ -65,7 +65,7 @@ var fetchBusinessCategory = ((req, res) => {
 var deleteBusinessCategory = ((req, res) => {
     try {
         var id = req.body.businessId
-        business.findByIdAndUpdate(id, { $set: { status: 5 } })
+        business.findByIdAndDelete(id)
             .then((user) => {
                 if (user) {
                     return res.json({ status: true, message: 'Business Category Deleted', user });
